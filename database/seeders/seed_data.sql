@@ -70,24 +70,23 @@ VALUES
     ('00000000-0000-0000-0000-000000000110', '+91-9123456789', 'Deepika Nair', 'victim', NULL, TRUE, '2024-01-11 12:00:00+05:30', '2024-01-11 12:00:00+05:30')
 ON CONFLICT (id) DO NOTHING;
 
--- ============================================
 -- STEP 5: Create Credentials for Organizations
 -- ============================================
--- Password hash for "password123" (bcrypt hash - example only, use proper hashing in production)
--- Using a simple hash for demo: $2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy
+-- Demo accounts: username + password123
+-- Hash: bcrypt.hash("password123", 10). All org accounts (SDMA, DDMA, NGO) share it.
 INSERT INTO credentials (id, user_id, username, password_hash, created_at, updated_at)
 VALUES 
     -- SDMA
-    ('00000000-0000-0000-0000-000000000201', '00000000-0000-0000-0000-000000000001', 'sdma_admin', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', '2024-01-01 10:00:00+05:30', '2024-01-01 10:00:00+05:30'),
+    ('00000000-0000-0000-0000-000000000201', '00000000-0000-0000-0000-000000000001', 'sdma_admin', '$2b$10$g4isM.QzmyACQNzuK7/sF.C8YUxavtvEv0zgn83wnQnjwzKazgYnK', '2024-01-01 10:00:00+05:30', '2024-01-01 10:00:00+05:30'),
     -- DDMA
-    ('00000000-0000-0000-0000-000000000202', '00000000-0000-0000-0000-000000000002', 'ddma_delhi', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', '2024-01-02 10:00:00+05:30', '2024-01-02 10:00:00+05:30'),
-    ('00000000-0000-0000-0000-000000000203', '00000000-0000-0000-0000-000000000003', 'ddma_mumbai', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', '2024-01-02 11:00:00+05:30', '2024-01-02 11:00:00+05:30'),
+    ('00000000-0000-0000-0000-000000000202', '00000000-0000-0000-0000-000000000002', 'ddma_delhi', '$2b$10$g4isM.QzmyACQNzuK7/sF.C8YUxavtvEv0zgn83wnQnjwzKazgYnK', '2024-01-02 10:00:00+05:30', '2024-01-02 10:00:00+05:30'),
+    ('00000000-0000-0000-0000-000000000203', '00000000-0000-0000-0000-000000000003', 'ddma_mumbai', '$2b$10$g4isM.QzmyACQNzuK7/sF.C8YUxavtvEv0zgn83wnQnjwzKazgYnK', '2024-01-02 11:00:00+05:30', '2024-01-02 11:00:00+05:30'),
     -- NGOs
-    ('00000000-0000-0000-0000-000000000204', '00000000-0000-0000-0000-000000000004', 'redcross', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', '2024-01-03 10:00:00+05:30', '2024-01-03 10:00:00+05:30'),
-    ('00000000-0000-0000-0000-000000000205', '00000000-0000-0000-0000-000000000005', 'savethechildren', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', '2024-01-03 11:00:00+05:30', '2024-01-03 11:00:00+05:30'),
-    ('00000000-0000-0000-0000-000000000206', '00000000-0000-0000-0000-000000000006', 'oxfam', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', '2024-01-03 12:00:00+05:30', '2024-01-03 12:00:00+05:30'),
-    ('00000000-0000-0000-0000-000000000207', '00000000-0000-0000-0000-000000000007', 'goonj', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', '2024-01-03 13:00:00+05:30', '2024-01-03 13:00:00+05:30'),
-    ('00000000-0000-0000-0000-000000000208', '00000000-0000-0000-0000-000000000008', 'helpage', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', '2024-01-03 14:00:00+05:30', '2024-01-03 14:00:00+05:30')
+    ('00000000-0000-0000-0000-000000000204', '00000000-0000-0000-0000-000000000004', 'redcross', '$2b$10$g4isM.QzmyACQNzuK7/sF.C8YUxavtvEv0zgn83wnQnjwzKazgYnK', '2024-01-03 10:00:00+05:30', '2024-01-03 10:00:00+05:30'),
+    ('00000000-0000-0000-0000-000000000205', '00000000-0000-0000-0000-000000000005', 'savethechildren', '$2b$10$g4isM.QzmyACQNzuK7/sF.C8YUxavtvEv0zgn83wnQnjwzKazgYnK', '2024-01-03 11:00:00+05:30', '2024-01-03 11:00:00+05:30'),
+    ('00000000-0000-0000-0000-000000000206', '00000000-0000-0000-0000-000000000006', 'oxfam', '$2b$10$g4isM.QzmyACQNzuK7/sF.C8YUxavtvEv0zgn83wnQnjwzKazgYnK', '2024-01-03 12:00:00+05:30', '2024-01-03 12:00:00+05:30'),
+    ('00000000-0000-0000-0000-000000000207', '00000000-0000-0000-0000-000000000007', 'goonj', '$2b$10$g4isM.QzmyACQNzuK7/sF.C8YUxavtvEv0zgn83wnQnjwzKazgYnK', '2024-01-03 13:00:00+05:30', '2024-01-03 13:00:00+05:30'),
+    ('00000000-0000-0000-0000-000000000208', '00000000-0000-0000-0000-000000000008', 'helpage', '$2b$10$g4isM.QzmyACQNzuK7/sF.C8YUxavtvEv0zgn83wnQnjwzKazgYnK', '2024-01-03 14:00:00+05:30', '2024-01-03 14:00:00+05:30')
 ON CONFLICT (id) DO NOTHING;
 
 -- ============================================
@@ -152,26 +151,105 @@ VALUES
 ON CONFLICT (id) DO NOTHING;
 
 -- ============================================
--- STEP 8: Create Photo Evidence
+-- STEP 8: Create Photo Evidence (FIXED)
 -- ============================================
--- Photos required for: arriving, in_progress, resolved
--- NOT required for: accepted, submitted, fake_information
 
-INSERT INTO photo_evidence (id, complaint_id, complaint_status, photo_url, photo_hash, uploaded_by, uploaded_at)
-VALUES 
-    -- For arriving status
-    ('00000000-0000-0000-0000-000000000501', '00000000-0000-0000-0000-000000000403', 'arriving', '/uploads/photos/rescue_arriving_001.jpg', 'abc123def456ghi789', '00000000-0000-0000-0000-000000000005', '2024-01-17 12:15:00+05:30'),
-    ('00000000-0000-0000-0000-000000000502', '00000000-0000-0000-0000-000000000410', 'arriving', '/uploads/photos/rescue_arriving_002.jpg', 'xyz789uvw456rst123', '00000000-0000-0000-0000-000000000008', '2024-01-23 10:30:00+05:30'),
-    
-    -- For in_progress status
-    ('00000000-0000-0000-0000-000000000503', '00000000-0000-0000-0000-000000000404', 'in_progress', '/uploads/photos/rescue_inprogress_001.jpg', 'mno456pqr789stu012', '00000000-0000-0000-0000-000000000006', '2024-01-18 09:45:00+05:30'),
-    ('00000000-0000-0000-0000-000000000504', '00000000-0000-0000-0000-000000000408', 'in_progress', '/uploads/photos/rescue_inprogress_002.jpg', 'vwx123yza456bcd789', '00000000-0000-0000-0000-000000000007', '2024-01-22 08:30:00+05:30'),
-    
-    -- For resolved status
-    ('00000000-0000-0000-0000-000000000505', '00000000-0000-0000-0000-000000000405', 'resolved', '/uploads/photos/rescue_resolved_001.jpg', 'efg012hij345klm678', '00000000-0000-0000-0000-000000000004', '2024-01-19 16:15:00+05:30'),
-    ('00000000-0000-0000-0000-000000000506', '00000000-0000-0000-0000-000000000409', 'resolved', '/uploads/photos/rescue_resolved_002.jpg', 'nop789qrs012tuv345', '00000000-0000-0000-0000-000000000007', '2024-01-22 18:15:00+05:30'),
-    ('00000000-0000-0000-0000-000000000507', '00000000-0000-0000-0000-000000000411', 'resolved', '/uploads/photos/rescue_resolved_003.jpg', 'ghi678jkl901mno234', '00000000-0000-0000-0000-000000000008', '2024-01-23 20:30:00+05:30')
+INSERT INTO photo_evidence (
+    id,
+    complaint_id,
+    complaint_status,
+    ipfs_cid,
+    photo_url,
+    photo_hash,
+    exif_timestamp,
+    uploaded_by,
+    uploaded_at
+)
+VALUES
+    -- arriving
+    (
+        '00000000-0000-0000-0000-000000000501',
+        '00000000-0000-0000-0000-000000000403',
+        'arriving',
+        'QmMockArriving001',
+        '/uploads/photos/rescue_arriving_001.jpg',
+        'abc123def456ghi789',
+        '2024-01-17 12:10:00+05:30',
+        '00000000-0000-0000-0000-000000000005',
+        '2024-01-17 12:15:00+05:30'
+    ),
+    (
+        '00000000-0000-0000-0000-000000000502',
+        '00000000-0000-0000-0000-000000000410',
+        'arriving',
+        'QmMockArriving002',
+        '/uploads/photos/rescue_arriving_002.jpg',
+        'xyz789uvw456rst123',
+        '2024-01-23 10:25:00+05:30',
+        '00000000-0000-0000-0000-000000000008',
+        '2024-01-23 10:30:00+05:30'
+    ),
+
+    -- in_progress
+    (
+        '00000000-0000-0000-0000-000000000503',
+        '00000000-0000-0000-0000-000000000404',
+        'in_progress',
+        'QmMockProgress001',
+        '/uploads/photos/rescue_inprogress_001.jpg',
+        'mno456pqr789stu012',
+        '2024-01-18 09:40:00+05:30',
+        '00000000-0000-0000-0000-000000000006',
+        '2024-01-18 09:45:00+05:30'
+    ),
+    (
+        '00000000-0000-0000-0000-000000000504',
+        '00000000-0000-0000-0000-000000000408',
+        'in_progress',
+        'QmMockProgress002',
+        '/uploads/photos/rescue_inprogress_002.jpg',
+        'vwx123yza456bcd789',
+        '2024-01-22 08:25:00+05:30',
+        '00000000-0000-0000-0000-000000000007',
+        '2024-01-22 08:30:00+05:30'
+    ),
+
+    -- resolved
+    (
+        '00000000-0000-0000-0000-000000000505',
+        '00000000-0000-0000-0000-000000000405',
+        'resolved',
+        'QmMockResolved001',
+        '/uploads/photos/rescue_resolved_001.jpg',
+        'efg012hij345klm678',
+        '2024-01-19 16:10:00+05:30',
+        '00000000-0000-0000-0000-000000000004',
+        '2024-01-19 16:15:00+05:30'
+    ),
+    (
+        '00000000-0000-0000-0000-000000000506',
+        '00000000-0000-0000-0000-000000000409',
+        'resolved',
+        'QmMockResolved002',
+        '/uploads/photos/rescue_resolved_002.jpg',
+        'nop789qrs012tuv345',
+        '2024-01-22 18:10:00+05:30',
+        '00000000-0000-0000-0000-000000000007',
+        '2024-01-22 18:15:00+05:30'
+    ),
+    (
+        '00000000-0000-0000-0000-000000000507',
+        '00000000-0000-0000-0000-000000000411',
+        'resolved',
+        'QmMockResolved003',
+        '/uploads/photos/rescue_resolved_003.jpg',
+        'ghi678jkl901mno234',
+        '2024-01-23 20:25:00+05:30',
+        '00000000-0000-0000-0000-000000000008',
+        '2024-01-23 20:30:00+05:30'
+    )
 ON CONFLICT (id) DO NOTHING;
+
 
 -- ============================================
 -- STEP 9: Create Donations

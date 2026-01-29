@@ -37,8 +37,25 @@ async function login(req, res) {
             });
         }
         
-        // Verify password
+        // Verify password hash exists
+        if (!credentials.passwordHash) {
+            console.error('[NGO Login] ERROR: Password hash is missing for username:', username);
+            return res.status(500).json({
+                success: false,
+                error: 'INTERNAL_ERROR',
+                message: 'Account configuration error. Please contact administrator.'
+            });
+        }
+        
+        // Verify password using bcrypt.compare()
+        // IMPORTANT: password is plain text from request, passwordHash is bcrypt hash from database
+        // Do NOT hash the password again - bcrypt.compare() handles the comparison
+        console.log('[NGO Login] Verifying password for username:', username);
+        console.log('[NGO Login] Password hash from DB (first 20 chars):', credentials.passwordHash.substring(0, 20) + '...');
+        
         const passwordValid = await verifyPassword(password, credentials.passwordHash);
+        
+        console.log('[NGO Login] bcrypt.compare() result:', passwordValid);
         
         if (!passwordValid) {
             return res.status(401).json({

@@ -8,13 +8,13 @@ const router = express.Router();
 const { authenticate } = require('../../middleware/auth/authenticate');
 const { authorizeOrganization } = require('../../middleware/auth/authorize');
 const photosController = require('../../controllers/photosController');
-const { asyncHandler } = require('../../middleware/errorHandler');
+const upload = require('../../middleware/upload/multerConfig');
 
 // All routes require authentication
 router.use(authenticate);
 
-// Upload photo (organizations only)
-router.post('/', authorizeOrganization, photosController.uploadPhoto);
+// Upload photo (organizations only) - expects multipart/form-data with 'photo' field
+router.post('/', authorizeOrganization, upload.single('photo'), photosController.uploadPhoto);
 
 // Get photos for a complaint
 router.get('/complaint/:complaintId', photosController.getComplaintPhotos);

@@ -1,47 +1,16 @@
-# Frontend Structure
+# React + Vite
 
-React + Vite application with government-style UI for RescueChain platform.
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-## Directory Structure
+Currently, two official plugins are available:
 
-### `/src/components`
-Reusable UI components organized by feature area:
-- `auth/` - Authentication components (login forms, OTP inputs)
-- `victims/` - Victim-specific UI components
-- `ngo/` - NGO dashboard and management components
-- `ddma/` - DDMA (District Disaster Management Authority) components
-- `sdma/` - SDMA (State Disaster Management Authority) components
-- `payments/` - UPI QR display and payment status components
-- `rescue/` - Rescue operation tracking and management components
-- `common/` - Shared components (headers, footers, buttons, cards)
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
 
-### `/src/pages`
-Page-level components representing main application routes:
-- `victim/` - Victim portal pages
-- `ngo/` - NGO portal pages
-- `ddma/` - DDMA portal pages
-- `sdma/` - SDMA portal pages
-- `auth/` - Authentication pages (login, OTP verification)
+## React Compiler
 
-### `/src/services`
-API integration and business logic services:
-- `api/` - REST API client configuration and request handlers
-- `auth/` - Authentication service (handles OTP for victims, credentials for orgs)
+The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
 
-### `/src/utils`
-Utility functions and helpers:
-- `validation/` - Form validation utilities
+## Expanding the ESLint configuration
 
-### `/src/hooks`
-Custom React hooks for reusable stateful logic
-
-### `/src/context`
-React Context providers for global state management (auth state, user data, etc.)
-
-### `/src/assets`
-Static assets:
-- `images/` - Image files (logos, icons, uploaded photos for accountability)
-- `styles/` - Global CSS, themes, and styling configurations
-
-### `/public`
-Static public assets served directly (favicon, manifest, etc.)
+If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.

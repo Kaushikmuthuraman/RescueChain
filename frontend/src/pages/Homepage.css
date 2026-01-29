@@ -1,0 +1,483 @@
+/**
+ * Homepage Styles
+ * Government-style, clean and professional design
+ */
+
+.homepage {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #f5f7fa 0%, #e9ecef 100%);
+}
+
+/* Demo Banner */
+.demo-banner {
+    background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+    color: white;
+    padding: 12px 20px;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.demo-banner-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.demo-banner-icon {
+    font-size: 18px;
+}
+
+/* Header */
+.homepage-header {
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+    color: white;
+    padding: 60px 20px;
+    text-align: center;
+}
+
+.header-content {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.homepage-title {
+    font-size: 3.5rem;
+    font-weight: 700;
+    margin: 0 0 10px 0;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.homepage-subtitle {
+    font-size: 1.5rem;
+    margin: 0 0 20px 0;
+    opacity: 0.95;
+}
+
+.homepage-description {
+    font-size: 1.1rem;
+    max-width: 800px;
+    margin: 20px auto 0;
+    line-height: 1.6;
+    opacity: 0.9;
+}
+
+/* Common Section Styles */
+section {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 60px 20px;
+}
+
+.section-title {
+    font-size: 2.5rem;
+    font-weight: 600;
+    color: #1e3c72;
+    text-align: center;
+    margin-bottom: 40px;
+    border-bottom: 3px solid #2a5298;
+    padding-bottom: 15px;
+}
+
+.subsection-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #2a5298;
+    margin: 30px 0 20px 0;
+}
+
+/* Activity Snapshot */
+.activity-snapshot {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin: 40px auto;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 20px;
+    margin-bottom: 40px;
+}
+
+.stat-card {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border: 2px solid #dee2e6;
+    border-radius: 8px;
+    padding: 30px 20px;
+    text-align: center;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.stat-icon {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+}
+
+.stat-value {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #1e3c72;
+    margin: 10px 0;
+}
+
+.stat-label {
+    font-size: 1rem;
+    color: #6c757d;
+    font-weight: 500;
+}
+
+/* Recent Activity */
+.recent-activity {
+    margin-top: 40px;
+    padding-top: 30px;
+    border-top: 2px solid #e9ecef;
+}
+
+.activity-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.activity-item {
+    background: #f8f9fa;
+    border-left: 4px solid #2a5298;
+    border-radius: 4px;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background 0.2s;
+}
+
+.activity-item:hover {
+    background: #e9ecef;
+}
+
+.activity-location {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 600;
+    color: #212529;
+    font-size: 1.1rem;
+}
+
+.activity-icon {
+    font-size: 1.2rem;
+}
+
+.activity-meta {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.urgency-badge {
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.urgency-low {
+    background: #d4edda;
+    color: #155724;
+}
+
+.urgency-medium {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.urgency-high {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.urgency-critical {
+    background: #f5c6cb;
+    color: #721c24;
+    font-weight: 700;
+}
+
+.activity-date {
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+/* NGO List */
+.ngo-list-section {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin: 40px auto;
+}
+
+.ngo-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 25px;
+}
+
+.ngo-card {
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    border: 2px solid #dee2e6;
+    border-radius: 8px;
+    padding: 25px;
+    text-align: center;
+    transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+}
+
+.ngo-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    border-color: #2a5298;
+}
+
+.ngo-icon {
+    font-size: 3rem;
+    margin-bottom: 15px;
+}
+
+.ngo-name {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #1e3c72;
+    margin-bottom: 10px;
+}
+
+.ngo-registration {
+    font-size: 0.9rem;
+    color: #6c757d;
+    margin-bottom: 8px;
+}
+
+.ngo-address {
+    font-size: 0.9rem;
+    color: #495057;
+    margin-top: 10px;
+}
+
+/* Donation Section */
+.donation-section {
+    background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin: 40px auto;
+}
+
+.donation-content {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.donation-description {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: #2e7d32;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.donate-button {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    color: white;
+    border: none;
+    padding: 15px 40px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    display: block;
+    margin: 0 auto;
+}
+
+.donate-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(40, 167, 69, 0.4);
+}
+
+.donation-form-container {
+    background: white;
+    border-radius: 8px;
+    padding: 30px;
+    margin-top: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.cancel-donation-button {
+    background: #6c757d;
+    color: white;
+    border: none;
+    padding: 10px 30px;
+    font-size: 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-top: 20px;
+    width: 100%;
+}
+
+.cancel-donation-button:hover {
+    background: #5a6268;
+}
+
+/* Portal Buttons */
+.portal-buttons-section {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin: 40px auto;
+}
+
+.portal-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 25px;
+}
+
+.portal-card {
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    border: 2px solid #dee2e6;
+    border-radius: 8px;
+    padding: 30px 20px;
+    text-align: center;
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+    display: block;
+}
+
+.portal-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+    text-decoration: none;
+    color: inherit;
+}
+
+.portal-victim:hover {
+    border-color: #007bff;
+}
+
+.portal-ngo:hover {
+    border-color: #28a745;
+}
+
+.portal-ddma:hover {
+    border-color: #ffc107;
+}
+
+.portal-sdma:hover {
+    border-color: #dc3545;
+}
+
+.portal-icon {
+    font-size: 3.5rem;
+    margin-bottom: 15px;
+}
+
+.portal-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #1e3c72;
+    margin-bottom: 10px;
+}
+
+.portal-description {
+    font-size: 0.95rem;
+    color: #6c757d;
+    line-height: 1.6;
+    margin-bottom: 15px;
+}
+
+.portal-action {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #2a5298;
+    margin-top: 10px;
+}
+
+/* Footer */
+.homepage-footer {
+    background: #212529;
+    color: white;
+    padding: 40px 20px;
+    text-align: center;
+    margin-top: 60px;
+}
+
+.footer-content p {
+    margin: 8px 0;
+}
+
+.footer-note {
+    font-size: 0.9rem;
+    opacity: 0.8;
+}
+
+/* Utility Classes */
+.loading,
+.error {
+    text-align: center;
+    padding: 40px 20px;
+    font-size: 1.2rem;
+}
+
+.error {
+    color: #dc3545;
+}
+
+.no-data {
+    text-align: center;
+    padding: 40px 20px;
+    color: #6c757d;
+    font-size: 1.1rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .homepage-title {
+        font-size: 2.5rem;
+    }
+
+    .homepage-subtitle {
+        font-size: 1.2rem;
+    }
+
+    .section-title {
+        font-size: 2rem;
+    }
+
+    .stats-grid {
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    }
+
+    .stat-value {
+        font-size: 2rem;
+    }
+
+    .activity-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .ngo-grid,
+    .portal-grid {
+        grid-template-columns: 1fr;
+    }
+}

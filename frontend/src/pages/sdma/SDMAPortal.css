@@ -1,0 +1,253 @@
+/**
+ * SDMA Portal styles
+ */
+
+.sdma-portal {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #f5f7fa 0%, #e9ecef 100%);
+}
+
+.sdma-portal-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.sdma-portal-loading,
+.sdma-data-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 40vh;
+    gap: 16px;
+}
+
+.sdma-portal-loading {
+    min-height: 100vh;
+}
+
+.sdma-spinner {
+    width: 48px;
+    height: 48px;
+    border: 4px solid #e9ecef;
+    border-top-color: #0d6efd;
+    border-radius: 50%;
+    animation: sdma-spin 1s linear infinite;
+}
+
+@keyframes sdma-spin {
+    to { transform: rotate(360deg); }
+}
+
+.sdma-portal-loading p,
+.sdma-data-loading p {
+    margin: 0;
+    color: #6c757d;
+    font-size: 1rem;
+}
+
+/* Header */
+.sdma-portal-header {
+    background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+    color: #fff;
+    padding: 24px 28px;
+    border-radius: 12px;
+    margin-bottom: 24px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.sdma-header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.sdma-header-left {
+    flex: 1;
+}
+
+.sdma-portal-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin: 0 0 4px 0;
+}
+
+.sdma-portal-subtitle {
+    font-size: 1rem;
+    opacity: 0.9;
+    margin: 0;
+}
+
+.sdma-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.sdma-link-home {
+    color: #fff;
+    text-decoration: none;
+    font-size: 0.95rem;
+    opacity: 0.9;
+}
+
+.sdma-link-home:hover {
+    opacity: 1;
+    text-decoration: underline;
+}
+
+.sdma-user-info {
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+.sdma-btn-logout {
+    padding: 8px 20px;
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    border-radius: 8px;
+    color: #fff;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.sdma-btn-logout:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+/* Data error */
+.sdma-data-error {
+    padding: 16px;
+    background: #f8d7da;
+    color: #721c24;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.sdma-data-error button {
+    padding: 6px 14px;
+    background: #721c24;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+
+.sdma-data-error button:hover {
+    background: #5a151b;
+}
+
+/* Summary cards */
+.sdma-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.sdma-card {
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e9ecef;
+}
+
+.sdma-card-critical {
+    border-color: #dc3545;
+    background: #fff5f5;
+}
+
+.sdma-card-label {
+    font-size: 0.875rem;
+    color: #6c757d;
+    margin-bottom: 8px;
+}
+
+.sdma-card-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #212529;
+}
+
+.sdma-card-critical .sdma-card-value {
+    color: #dc3545;
+}
+
+/* Table */
+.sdma-table-section {
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e9ecef;
+    overflow: hidden;
+}
+
+.sdma-table-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 0;
+    padding: 16px 20px;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.sdma-table-wrap {
+    overflow-x: auto;
+}
+
+.sdma-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+}
+
+.sdma-table th,
+.sdma-table td {
+    padding: 12px 16px;
+    text-align: left;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.sdma-table th {
+    background: #f8f9fa;
+    font-weight: 600;
+    color: #495057;
+}
+
+.sdma-table tbody tr:hover {
+    background: #f8f9fa;
+}
+
+.sdma-table-empty {
+    color: #6c757d;
+    font-style: italic;
+    text-align: center;
+    padding: 32px !important;
+}
+
+@media (max-width: 768px) {
+    .sdma-portal-container {
+        padding: 12px;
+    }
+    .sdma-portal-title {
+        font-size: 1.4rem;
+    }
+    .sdma-cards {
+        grid-template-columns: 1fr;
+    }
+    .sdma-table th,
+    .sdma-table td {
+        padding: 10px 12px;
+        font-size: 0.85rem;
+    }
+}

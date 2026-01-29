@@ -14,15 +14,21 @@ const apiRoutes = require('./routes/api');
 // Import error handlers
 const { errorHandler, notFoundHandler } = require('./middleware/errorHandler');
 
+// Import rate limiting
+const { defaultRateLimiter } = require('./middleware/auth/generalRateLimiter');
+
 // Create Express app
 const app = express();
 
 // Middleware
 app.use(helmet()); // Security headers
 app.use(cors()); // Enable CORS
-app.use(express.json()); // Parse JSON bodies
-app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
+app.use(express.json({ limit: '10mb' })); // Parse JSON bodies (limit to prevent abuse)
+app.use(express.urlencoded({ extended: true, limit: '10mb' })); // Parse URL-encoded bodies
 app.use(morgan('combined')); // HTTP request logger
+
+// Apply general rate limiting to all API routes (protects from abuse)
+app.use('/api', defaultRateLimiter);
 
 // API routes
 app.use('/api', apiRoutes);

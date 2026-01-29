@@ -1,0 +1,249 @@
+/**
+ * Complaint Form Styles
+ */
+
+.complaint-form-container {
+    padding: 20px;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.complaint-form-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+}
+
+.complaint-form-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #1e3c72;
+    margin: 0 0 10px 0;
+}
+
+.complaint-form-subtitle {
+    font-size: 1rem;
+    color: #6c757d;
+    margin: 0 0 30px 0;
+}
+
+.complaint-form-error {
+    background: #f8d7da;
+    color: #721c24;
+    padding: 12px 16px;
+    border-radius: 8px;
+    border: 1px solid #f5c6cb;
+    margin-bottom: 20px;
+}
+
+.complaint-form {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-group label {
+    font-weight: 600;
+    color: #495057;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.field-help {
+    font-weight: 400;
+    color: #6c757d;
+    font-size: 0.85rem;
+}
+
+.field-required {
+    color: #dc3545;
+    font-size: 0.85rem;
+}
+
+.form-input,
+.form-textarea,
+.form-select {
+    padding: 12px 16px;
+    font-size: 1rem;
+    border: 2px solid #dee2e6;
+    border-radius: 8px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    font-family: inherit;
+}
+
+.form-input:focus,
+.form-textarea:focus,
+.form-select:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.form-textarea {
+    resize: vertical;
+    min-height: 120px;
+}
+
+.btn-location {
+    margin-top: 8px;
+    padding: 8px 16px;
+    background: #e9ecef;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background 0.2s;
+    align-self: flex-start;
+}
+
+.btn-location:hover:not(:disabled) {
+    background: #dee2e6;
+}
+
+.coordinates-display {
+    display: flex;
+    gap: 20px;
+    padding: 8px 12px;
+    background: #f8f9fa;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    color: #495057;
+}
+
+/* Photo Upload Styles */
+.photo-upload-area {
+    position: relative;
+}
+
+.photo-input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    overflow: hidden;
+}
+
+.photo-upload-label {
+    display: block;
+    padding: 40px 20px;
+    border: 2px dashed #dee2e6;
+    border-radius: 8px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+    background: #f8f9fa;
+}
+
+.photo-upload-label:hover {
+    border-color: #667eea;
+    background: #f0f4ff;
+}
+
+.photo-upload-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.photo-icon {
+    font-size: 3rem;
+}
+
+.photo-hint {
+    font-size: 0.85rem;
+    color: #6c757d;
+}
+
+.photo-selected {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    color: #28a745;
+    font-weight: 600;
+}
+
+.photo-name {
+    font-size: 0.9rem;
+    color: #6c757d;
+    font-weight: 400;
+}
+
+.photo-preview {
+    margin-top: 15px;
+    text-align: center;
+}
+
+.photo-preview img {
+    max-width: 100%;
+    max-height: 400px;
+    border-radius: 8px;
+    border: 2px solid #dee2e6;
+    margin-bottom: 10px;
+}
+
+.btn-remove-photo {
+    padding: 8px 16px;
+    background: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background 0.2s;
+}
+
+.btn-remove-photo:hover:not(:disabled) {
+    background: #c82333;
+}
+
+.form-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 10px;
+}
+
+.btn {
+    padding: 12px 24px;
+    font-size: 1rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.btn:not(:disabled):hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.btn-secondary {
+    background: #6c757d;
+    color: white;
+}
+
+.btn-block {
+    width: 100%;
+}

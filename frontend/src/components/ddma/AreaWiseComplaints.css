@@ -1,0 +1,265 @@
+/**
+ * Area-Wise Complaints Styles
+ */
+
+.area-wise-complaints {
+    padding: 20px;
+}
+
+.area-wise-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.area-wise-header h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #1e3c72;
+    margin: 0;
+}
+
+.header-actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.filter-select {
+    padding: 8px 16px;
+    border: 2px solid #dee2e6;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+
+.btn-refresh {
+    padding: 8px 16px;
+    background: #e9ecef;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background 0.2s;
+}
+
+.btn-refresh:hover {
+    background: #dee2e6;
+}
+
+.error-message {
+    background: #f8d7da;
+    color: #721c24;
+    padding: 12px 16px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+}
+
+.areas-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.areas-list h3 {
+    font-size: 1.5rem;
+    color: #495057;
+    margin-bottom: 15px;
+}
+
+.no-areas,
+.no-complaints {
+    text-align: center;
+    padding: 40px 20px;
+    color: #6c757d;
+}
+
+.areas-grid {
+    display: grid;
+    gap: 15px;
+}
+
+.area-card {
+    background: white;
+    border: 2px solid #dee2e6;
+    border-radius: 12px;
+    padding: 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.area-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-color: #007bff;
+}
+
+.area-card.selected {
+    border-color: #007bff;
+    background: #e7f3ff;
+}
+
+.area-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.area-name {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #1e3c72;
+    margin: 0;
+}
+
+.area-count {
+    background: #007bff;
+    color: white;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.area-status-breakdown {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+
+.status-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 0;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.status-label {
+    font-weight: 500;
+    color: #6c757d;
+}
+
+.status-count {
+    font-weight: 600;
+    color: #495057;
+}
+
+.status-item .status-label.fake {
+    color: #dc3545;
+}
+
+.area-complaints-list {
+    background: white;
+    border: 2px solid #dee2e6;
+    border-radius: 12px;
+    padding: 20px;
+}
+
+.area-complaints-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.area-complaints-header h3 {
+    font-size: 1.3rem;
+    color: #1e3c72;
+    margin: 0;
+}
+
+.btn-close {
+    padding: 6px 12px;
+    background: #e9ecef;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+.loading-complaints {
+    text-align: center;
+    padding: 40px 20px;
+}
+
+.complaints-list {
+    display: grid;
+    gap: 15px;
+}
+
+.complaint-card {
+    background: #f8f9fa;
+    border: 2px solid #dee2e6;
+    border-radius: 8px;
+    padding: 15px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.complaint-card:hover {
+    border-color: #007bff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.complaint-card.unassigned {
+    border-color: #ffc107;
+}
+
+.complaint-card-header {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.status-badge {
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.status-submitted { background: #cfe2ff; color: #084298; }
+.status-accepted { background: #d1e7dd; color: #0f5132; }
+.status-arriving { background: #fff3cd; color: #856404; }
+.status-in-progress { background: #d4edda; color: #155724; }
+.status-resolved { background: #d1e7dd; color: #0f5132; }
+.status-fake { background: #f8d7da; color: #721c24; }
+
+.unassigned-badge {
+    background: #fff3cd;
+    color: #856404;
+    padding: 4px 12px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+}
+
+.complaint-text {
+    margin: 10px 0;
+    color: #495057;
+    line-height: 1.6;
+}
+
+.victim-info,
+.assigned-info {
+    margin: 5px 0;
+    font-size: 0.9rem;
+    color: #6c757d;
+}
+
+.complaint-card-footer {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid #dee2e6;
+    font-size: 0.85rem;
+    color: #6c757d;
+}
+
+@media (max-width: 1024px) {
+    .areas-container {
+        grid-template-columns: 1fr;
+    }
+}

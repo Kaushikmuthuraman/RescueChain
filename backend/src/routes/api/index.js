@@ -12,6 +12,9 @@ const complaintsRoutes = require('./complaints');
 const photosRoutes = require('./photos');
 const donationsRoutes = require('./donations');
 const adminRoutes = require('./admin');
+const homepageRoutes = require('./homepage');
+const ddmaRoutes = require('./ddma');
+const sdmaRoutes = require('./sdma');
 
 // Mount routes
 router.use('/auth', authRoutes);
@@ -19,6 +22,9 @@ router.use('/complaints', complaintsRoutes);
 router.use('/photos', photosRoutes);
 router.use('/donations', donationsRoutes);
 router.use('/admin', adminRoutes);
+router.use('/homepage', homepageRoutes);
+router.use('/ddma', ddmaRoutes);
+router.use('/sdma', sdmaRoutes);
 
 // Health check
 router.get('/health', (req, res) => {

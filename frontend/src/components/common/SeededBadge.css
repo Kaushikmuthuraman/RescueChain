@@ -1,0 +1,38 @@
+/**
+ * Seeded Badge Styles
+ * Visual indicator for seeded/demo data
+ */
+
+.seeded-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 8px;
+    background: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffc107;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    cursor: help;
+    white-space: nowrap;
+}
+
+.seeded-badge:hover {
+    background: #ffe69c;
+    border-color: #ffb300;
+}
+
+/* Variant: Small inline badge */
+.seeded-badge.small {
+    font-size: 0.65rem;
+    padding: 2px 6px;
+}
+
+/* Variant: Large badge */
+.seeded-badge.large {
+    font-size: 0.85rem;
+    padding: 6px 10px;
+}

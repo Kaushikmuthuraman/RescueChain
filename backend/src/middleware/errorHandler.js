@@ -69,21 +69,54 @@ function errorHandler(err, req, res, next) {
         message = err.message;
     }
     
+    // Demo-safe error messages: Clear, explainable, no sensitive data exposure
     // Don't expose internal errors in production
-    if (process.env.NODE_ENV === 'production' && statusCode === 500) {
-        message = 'Internal server error';
+    const isDevelopment = process.env.NODE_ENV === 'development';
+    const isDemo = process.env.NODE_ENV === 'demo' || isDevelopment;
+    
+    if (!isDemo && statusCode === 500) {
+        message = 'Internal server error. Please try again later or contact support.';
+    }
+    
+    // Build error response with explainable information
+    const errorResponse = {
+        success: false,
+        error: errorCode,
+        message: message
+    };
+    
+    // Add helpful hints for common errors (demo-safe)
+    if (errorCode === 'VALIDATION_ERROR' && err.errors) {
+        errorResponse.errors = err.errors;
+        errorResponse.hint = 'Please check the validation errors above and correct your input.';
+    }
+    
+    if (errorCode === 'RATE_LIMIT_EXCEEDED') {
+        errorResponse.hint = 'Rate limiting protects the system from abuse. Please wait before trying again.';
+    }
+    
+    if (errorCode === 'INVALID_TOKEN' || errorCode === 'TOKEN_EXPIRED') {
+        errorResponse.hint = 'Your session may have expired. Please log in again.';
+    }
+    
+    if (errorCode === 'DUPLICATE_ENTRY') {
+        errorResponse.hint = 'This record already exists. Use a different identifier or update the existing record.';
+    }
+    
+    // Add development/debugging info only in development
+    if (isDevelopment) {
+        errorResponse.debug = {
+            stack: err.stack,
+            details: {
+                name: err.name,
+                code: err.code,
+                statusCode: statusCode
+            }
+        };
     }
     
     // Send error response
-    res.status(statusCode).json({
-        success: false,
-        error: errorCode,
-        message: message,
-        ...(process.env.NODE_ENV === 'development' && {
-            stack: err.stack,
-            details: err
-        })
-    });
+    res.status(statusCode).json(errorResponse);
 }
 
 /**

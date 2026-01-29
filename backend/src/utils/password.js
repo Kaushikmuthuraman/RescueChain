@@ -26,15 +26,26 @@ async function hashPassword(password) {
 
 /**
  * Verify a password against a hash
- * @param {string} password - Plain text password
- * @param {string} hash - Hashed password from database
+ * @param {string} password - Plain text password (NOT hashed)
+ * @param {string} hash - Hashed password from database (bcrypt hash)
  * @returns {Promise<boolean>} True if password matches
  */
 async function verifyPassword(password, hash) {
     try {
-        return await bcrypt.compare(password, hash);
+        // Ensure we have both password and hash
+        if (!password || !hash) {
+            console.error('[verifyPassword] Missing password or hash:', { hasPassword: !!password, hasHash: !!hash });
+            return false;
+        }
+        
+        // Use bcrypt.compare() - this compares plain password against bcrypt hash
+        // Do NOT hash the password before calling this - bcrypt.compare() handles it
+        const result = await bcrypt.compare(password, hash);
+        console.log('[verifyPassword] bcrypt.compare() called - result:', result);
+        return result;
     } catch (error) {
-        console.error('Error verifying password:', error);
+        console.error('[verifyPassword] Error during bcrypt.compare():', error.message);
+        console.error('[verifyPassword] Error details:', error);
         return false;
     }
 }
