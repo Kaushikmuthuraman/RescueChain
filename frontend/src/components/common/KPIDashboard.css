@@ -1,0 +1,150 @@
+/**
+ * KPI Dashboard Styles
+ */
+
+.kpi-dashboard {
+    margin-bottom: 1.5rem;
+}
+
+.kpi-dashboard--error {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 8px;
+    padding: 1.5rem;
+    text-align: center;
+    color: #dc2626;
+}
+
+.kpi-dashboard__retry {
+    margin-top: 0.75rem;
+    padding: 0.5rem 1rem;
+    background: #dc2626;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.kpi-dashboard__retry:hover {
+    background: #b91c1c;
+}
+
+.kpi-dashboard__grid {
+    display: grid;
+    gap: 1rem;
+}
+
+/* Full variant - 6 cards in 3x2 on large screens */
+.kpi-dashboard--full .kpi-dashboard__grid {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+/* Compact variant - 4 cards in a row */
+.kpi-dashboard--compact .kpi-dashboard__grid {
+    grid-template-columns: repeat(4, 1fr);
+}
+
+/* Minimal variant - 2 key metrics */
+.kpi-dashboard--minimal .kpi-dashboard__grid {
+    grid-template-columns: repeat(2, 1fr);
+}
+
+/* Severity Bar */
+.kpi-dashboard__severity-bar {
+    margin-top: 1rem;
+    padding: 1rem;
+    background: #f9fafb;
+    border-radius: 8px;
+}
+
+.severity-bar {
+    display: flex;
+    height: 8px;
+    border-radius: 4px;
+    overflow: hidden;
+    background: #e5e7eb;
+}
+
+.severity-bar__segment {
+    transition: flex 0.3s ease;
+    min-width: 0;
+}
+
+.severity-bar__segment--critical {
+    background: #ef4444;
+}
+
+.severity-bar__segment--high {
+    background: #f97316;
+}
+
+.severity-bar__segment--medium {
+    background: #eab308;
+}
+
+.severity-bar__segment--low {
+    background: #6b7280;
+}
+
+.severity-bar__legend {
+    display: flex;
+    gap: 1rem;
+    margin-top: 0.75rem;
+    flex-wrap: wrap;
+    font-size: 0.75rem;
+}
+
+.severity-bar__legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    color: #4b5563;
+}
+
+.severity-bar__legend-item::before {
+    content: '';
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+}
+
+.severity-bar__legend-item--critical::before {
+    background: #ef4444;
+}
+
+.severity-bar__legend-item--high::before {
+    background: #f97316;
+}
+
+.severity-bar__legend-item--medium::before {
+    background: #eab308;
+}
+
+.severity-bar__legend-item--low::before {
+    background: #6b7280;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .kpi-dashboard--full .kpi-dashboard__grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .kpi-dashboard--compact .kpi-dashboard__grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 640px) {
+    .kpi-dashboard--full .kpi-dashboard__grid,
+    .kpi-dashboard--compact .kpi-dashboard__grid,
+    .kpi-dashboard--minimal .kpi-dashboard__grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .severity-bar__legend {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+}

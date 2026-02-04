@@ -1,0 +1,94 @@
+.notification-feed {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+}
+
+.notification-feed-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.notification-feed-title {
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.notification-feed-live {
+    color: #10b981;
+    margin-left: 6px;
+    font-size: 10px;
+}
+
+.notification-mark-all {
+    padding: 4px 10px;
+    font-size: 12px;
+    background: #f3f4f6;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.notification-mark-all:hover {
+    background: #e5e7eb;
+}
+
+.notification-feed-list {
+    overflow-y: auto;
+}
+
+.notification-feed-loading,
+.notification-feed-empty {
+    padding: 24px;
+    text-align: center;
+    color: #6b7280;
+    font-size: 14px;
+}
+
+.notification-item {
+    padding: 12px 16px;
+    border-bottom: 1px solid #f3f4f6;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.notification-item:hover {
+    background: #f9fafb;
+}
+
+.notification-item.unread {
+    background: #eff6ff;
+}
+
+.notification-item.unread:hover {
+    background: #dbeafe;
+}
+
+.notification-item-type {
+    font-size: 11px;
+    text-transform: uppercase;
+    color: #6b7280;
+    margin-bottom: 2px;
+}
+
+.notification-item-title {
+    font-weight: 600;
+    font-size: 13px;
+    color: #111827;
+}
+
+.notification-item-body {
+    font-size: 12px;
+    color: #4b5563;
+    margin-top: 4px;
+}
+
+.notification-item-time {
+    font-size: 11px;
+    color: #9ca3af;
+    margin-top: 6px;
+}

@@ -1,0 +1,172 @@
+/**
+ * Empty State Styles
+ */
+
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 2rem;
+}
+
+/* Variants */
+.empty-state--default {
+    background: transparent;
+}
+
+.empty-state--card {
+    background: #ffffff;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.empty-state--inline {
+    background: #f9fafb;
+    border-radius: 8px;
+    border: 1px dashed #d1d5db;
+}
+
+/* Sizes */
+.empty-state--small {
+    padding: 1rem;
+}
+
+.empty-state--small .empty-state__icon {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.empty-state--small .empty-state__title {
+    font-size: 0.9375rem;
+}
+
+.empty-state--small .empty-state__description {
+    font-size: 0.8125rem;
+}
+
+.empty-state--medium {
+    padding: 2rem;
+}
+
+.empty-state--large {
+    padding: 3rem;
+}
+
+.empty-state--large .empty-state__icon {
+    font-size: 3.5rem;
+}
+
+.empty-state--large .empty-state__title {
+    font-size: 1.5rem;
+}
+
+/* Icon */
+.empty-state__icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    line-height: 1;
+}
+
+/* Title */
+.empty-state__title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #111827;
+    margin: 0 0 0.5rem 0;
+}
+
+/* Description */
+.empty-state__description {
+    font-size: 0.9375rem;
+    color: #6b7280;
+    margin: 0;
+    max-width: 400px;
+    line-height: 1.5;
+}
+
+/* Action */
+.empty-state__action {
+    margin-top: 1.25rem;
+}
+
+.empty-state__button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.625rem 1.25rem;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    color: #ffffff;
+    background: #2563eb;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.empty-state__button:hover {
+    background: #1d4ed8;
+    transform: translateY(-1px);
+}
+
+.empty-state__button:active {
+    transform: translateY(0);
+}
+
+/* Small button for inline variant */
+.empty-state--inline .empty-state__button,
+.empty-state--small .empty-state__button {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+}
+
+/* Specific styling for certain contexts */
+.empty-state--card.empty-state--large {
+    min-height: 300px;
+}
+
+/* Animation for icon */
+.empty-state__icon {
+    animation: empty-state-bounce 2s ease-in-out infinite;
+}
+
+@keyframes empty-state-bounce {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-5px);
+    }
+}
+
+/* Reduce motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+    .empty-state__icon {
+        animation: none;
+    }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .empty-state--card {
+        background: #1f2937;
+        border-color: #374151;
+    }
+    
+    .empty-state--inline {
+        background: #1f2937;
+        border-color: #4b5563;
+    }
+    
+    .empty-state__title {
+        color: #f9fafb;
+    }
+    
+    .empty-state__description {
+        color: #9ca3af;
+    }
+}

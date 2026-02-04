@@ -79,6 +79,8 @@ CREATE TABLE ngos (
     organization_name VARCHAR(255) NOT NULL,
     registration_number VARCHAR(100) UNIQUE,
     address TEXT,
+    latitude DECIMAL(10,8),
+    longitude DECIMAL(11,8),
     contact_person VARCHAR(255),
     email VARCHAR(255),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
@@ -299,3 +301,24 @@ CREATE TRIGGER trigger_complaint_status_history
 AFTER UPDATE OF status ON complaints
 FOR EACH ROW
 EXECUTE FUNCTION create_status_history();
+
+-- ============================================
+-- BLOCKCHAIN AUDIT LOGS - LOCATION TRACKING
+-- Migration: Add location and actor tracking columns
+-- ============================================
+
+ALTER TABLE blockchain_audit_logs
+ADD COLUMN latitude VARCHAR(50),
+ADD COLUMN longitude VARCHAR(50),
+ADD COLUMN location_text TEXT,
+ADD COLUMN actor_role VARCHAR(20),
+ADD COLUMN actor_id UUID;
+
+-- Add CHECK constraint for actor_role enum values
+ALTER TABLE blockchain_audit_logs
+ADD CONSTRAINT check_actor_role CHECK (
+    actor_role IS NULL OR actor_role IN ('victim', 'ngo', 'ddma')
+);
+
+-- Add index for actor_id for faster lookups
+CREATE INDEX idx_audit_logs_actor_id ON blockchain_audit_logs(actor_id);

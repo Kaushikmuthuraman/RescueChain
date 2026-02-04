@@ -7,6 +7,9 @@ import React, { useState, useEffect } from 'react';
 import { getComplaint, getComplaintTimeline, getComplaintPhotos, updateComplaintStatus } from '../../services/api/ddmaApi';
 import StatusUpdateForm from '../ngo/StatusUpdateForm';
 import SeededBadge from '../common/SeededBadge';
+import BlockchainAudit from '../common/BlockchainAudit';
+import ComplaintTimeline from '../common/ComplaintTimeline';
+import SeverityIndicator from '../common/SeverityIndicator';
 import './DDMAComplaintDetail.css';
 
 const DDMAComplaintDetail = ({ complaintId, onBack, onStatusUpdated }) => {
@@ -143,18 +146,20 @@ const DDMAComplaintDetail = ({ complaintId, onBack, onStatusUpdated }) => {
                         <span className={`status-badge status-${complaint.status}`}>
                             {getStatusLabel(complaint.status)}
                         </span>
-                        <span className={`urgency-badge urgency-${complaint.urgency_level}`}>
-                            {complaint.urgency_level}
-                        </span>
+                        <SeverityIndicator 
+                            level={complaint.urgency_level} 
+                            size="medium"
+                            pulse={complaint.urgency_level === 'critical'}
+                        />
                         <SeededBadge isSeeded={complaint.is_seeded || complaint.isSeeded} />
                         {complaint.assigned_to === null && (
                             <span className="unassigned-badge">
-                                ⚠️ Unassigned
+                                Unassigned
                             </span>
                         )}
                         {isFake && (
                             <span className="fake-badge">
-                                ⚠️ Marked as Fake Information
+                                Marked as Fake Information
                             </span>
                         )}
                     </div>
@@ -226,53 +231,13 @@ const DDMAComplaintDetail = ({ complaintId, onBack, onStatusUpdated }) => {
                 {/* Status Timeline */}
                 <div className="timeline-card">
                     <h3>Status Timeline</h3>
-                    {timeline.length > 0 ? (
-                        <div className="timeline">
-                            {timeline.map((item, index) => (
-                                <div key={item.id} className="timeline-item">
-                                    <div className="timeline-marker">
-                                        <span className="timeline-icon">
-                                            {getStatusIcon(item.newStatus)}
-                                        </span>
-                                    </div>
-                                    <div className="timeline-content">
-                                        <div className="timeline-header">
-                                            <span className="timeline-status">
-                                                {item.oldStatus
-                                                    ? `${getStatusLabel(item.oldStatus)} → ${getStatusLabel(item.newStatus)}`
-                                                    : `Status: ${getStatusLabel(item.newStatus)}`}
-                                            </span>
-                                            <span className="timeline-date">
-                                                {formatDate(item.createdAt)}
-                                            </span>
-                                        </div>
-                                        {item.changedByName && (
-                                            <div className="timeline-user">
-                                                Changed by: {item.changedByName}
-                                                {item.changedByType && (
-                                                    <span className="user-type"> ({item.changedByType})</span>
-                                                )}
-                                            </div>
-                                        )}
-                                        {item.notes && (
-                                            <div className="timeline-notes">
-                                                {item.notes}
-                                            </div>
-                                        )}
-                                        {item.newStatus === 'fake_information' && item.reason && (
-                                            <div className="timeline-reason">
-                                                <strong>Reason for marking as fake:</strong> {item.reason}
-                                            </div>
-                                        )}
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    ) : (
-                        <div className="timeline-empty">
-                            <p>No status history available</p>
-                        </div>
-                    )}
+                    <ComplaintTimeline
+                        currentStatus={complaint.status}
+                        createdAt={complaint.created_at}
+                        timeline={timeline}
+                        variant="vertical"
+                        showActors={true}
+                    />
                 </div>
 
                 {/* Photos */}
@@ -317,6 +282,9 @@ const DDMAComplaintDetail = ({ complaintId, onBack, onStatusUpdated }) => {
                         </div>
                     </div>
                 )}
+
+                {/* Blockchain Audit Logs */}
+                <BlockchainAudit complaintId={complaintId} />
             </div>
         </div>
     );

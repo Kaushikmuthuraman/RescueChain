@@ -90,16 +90,16 @@ VALUES
 ON CONFLICT (id) DO NOTHING;
 
 -- ============================================
--- STEP 6: Create NGO Details
+-- STEP 6: Create NGO Details (with coordinates for map)
 -- ============================================
-INSERT INTO ngos (id, user_id, organization_name, registration_number, address, contact_person, email, created_at, updated_at)
+INSERT INTO ngos (id, user_id, organization_name, registration_number, address, latitude, longitude, contact_person, email, created_at, updated_at)
 VALUES 
-    ('00000000-0000-0000-0000-000000000301', '00000000-0000-0000-0000-000000000004', 'Red Cross Society', 'NGO-RC-2020-001', '123, Connaught Place, New Delhi - 110001', 'Dr. Ramesh Kumar', 'contact@redcross.in', '2024-01-03 10:00:00+05:30', '2024-01-03 10:00:00+05:30'),
-    ('00000000-0000-0000-0000-000000000302', '00000000-0000-0000-0000-000000000005', 'Save the Children Foundation', 'NGO-STC-2019-045', '456, Bandra Kurla Complex, Mumbai - 400051', 'Ms. Priya Menon', 'info@savethechildren.in', '2024-01-03 11:00:00+05:30', '2024-01-03 11:00:00+05:30'),
-    ('00000000-0000-0000-0000-000000000303', '00000000-0000-0000-0000-000000000006', 'Oxfam India', 'NGO-OXF-2018-078', '789, Sector 18, Noida - 201301', 'Mr. Anil Sharma', 'support@oxfamindia.org', '2024-01-03 12:00:00+05:30', '2024-01-03 12:00:00+05:30'),
-    ('00000000-0000-0000-0000-000000000304', '00000000-0000-0000-0000-000000000007', 'Goonj', 'NGO-GNJ-2017-112', '321, Hauz Khas, New Delhi - 110016', 'Ms. Anshu Gupta', 'hello@goonj.org', '2024-01-03 13:00:00+05:30', '2024-01-03 13:00:00+05:30'),
-    ('00000000-0000-0000-0000-000000000305', '00000000-0000-0000-0000-000000000008', 'Helpage India', 'NGO-HPI-2016-203', '654, Koramangala, Bangalore - 560095', 'Dr. Suresh Rao', 'contact@helpageindia.org', '2024-01-03 14:00:00+05:30', '2024-01-03 14:00:00+05:30')
-ON CONFLICT (id) DO NOTHING;
+    ('00000000-0000-0000-0000-000000000301', '00000000-0000-0000-0000-000000000004', 'Red Cross Society', 'NGO-RC-2020-001', '123, Connaught Place, New Delhi - 110001', 28.6315, 77.2167, 'Dr. Ramesh Kumar', 'contact@redcross.in', '2024-01-03 10:00:00+05:30', '2024-01-03 10:00:00+05:30'),
+    ('00000000-0000-0000-0000-000000000302', '00000000-0000-0000-0000-000000000005', 'Save the Children Foundation', 'NGO-STC-2019-045', '456, Bandra Kurla Complex, Mumbai - 400051', 19.0596, 72.8656, 'Ms. Priya Menon', 'info@savethechildren.in', '2024-01-03 11:00:00+05:30', '2024-01-03 11:00:00+05:30'),
+    ('00000000-0000-0000-0000-000000000303', '00000000-0000-0000-0000-000000000006', 'Oxfam India', 'NGO-OXF-2018-078', '789, Sector 18, Noida - 201301', 28.5355, 77.3910, 'Mr. Anil Sharma', 'support@oxfamindia.org', '2024-01-03 12:00:00+05:30', '2024-01-03 12:00:00+05:30'),
+    ('00000000-0000-0000-0000-000000000304', '00000000-0000-0000-0000-000000000007', 'Goonj', 'NGO-GNJ-2017-112', '321, Hauz Khas, New Delhi - 110016', 28.5484, 77.2067, 'Ms. Anshu Gupta', 'hello@goonj.org', '2024-01-03 13:00:00+05:30', '2024-01-03 13:00:00+05:30'),
+    ('00000000-0000-0000-0000-000000000305', '00000000-0000-0000-0000-000000000008', 'Helpage India', 'NGO-HPI-2016-203', '654, Koramangala, Bangalore - 560095', 12.9352, 77.6245, 'Dr. Suresh Rao', 'contact@helpageindia.org', '2024-01-03 14:00:00+05:30', '2024-01-03 14:00:00+05:30')
+ON CONFLICT (id) DO UPDATE SET latitude = EXCLUDED.latitude, longitude = EXCLUDED.longitude;
 
 -- ============================================
 -- STEP 7: Create Complaints (Across All Stages)

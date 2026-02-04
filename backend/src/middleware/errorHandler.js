@@ -7,11 +7,18 @@
  * Custom error class for application errors
  */
 class AppError extends Error {
-    constructor(message, statusCode, errorCode) {
+    /**
+     * @param {string} message - Human-readable message (demo-safe)
+     * @param {number} statusCode - HTTP status code
+     * @param {string} errorCode - Stable, safe error code (e.g. AUTHENTICATION_REQUIRED)
+     * @param {Object} [meta] - Optional non-sensitive metadata for observability
+     */
+    constructor(message, statusCode, errorCode, meta = {}) {
         super(message);
         this.statusCode = statusCode;
         this.errorCode = errorCode || 'INTERNAL_ERROR';
         this.isOperational = true;
+        this.meta = meta;
         
         Error.captureStackTrace(this, this.constructor);
     }
@@ -36,6 +43,7 @@ function errorHandler(err, req, res, next) {
     let statusCode = err.statusCode || 500;
     let errorCode = err.errorCode || 'INTERNAL_ERROR';
     let message = err.message || 'Internal server error';
+    const meta = err.meta && typeof err.meta === 'object' ? err.meta : {};
     
     // Handle known error types
     if (err.name === 'ValidationError') {
@@ -101,6 +109,11 @@ function errorHandler(err, req, res, next) {
     
     if (errorCode === 'DUPLICATE_ENTRY') {
         errorResponse.hint = 'This record already exists. Use a different identifier or update the existing record.';
+    }
+    
+    // Add meta if explicitly provided and demo-safe (non-sensitive)
+    if (Object.keys(meta).length > 0) {
+        errorResponse.meta = meta;
     }
     
     // Add development/debugging info only in development

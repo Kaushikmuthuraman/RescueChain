@@ -18,10 +18,27 @@ const { AppError } = require('../../middleware/errorHandler');
  * @param {Object} params.data - Data to audit (will be sanitized before hashing)
  * @param {Object} params.oldData - Previous state (optional, for updates)
  * @param {string} params.userId - ID of user performing action
+ * @param {string} params.latitude - Transaction latitude (optional, stored in DB only)
+ * @param {string} params.longitude - Transaction longitude (optional, stored in DB only)
+ * @param {string} params.locationText - Location text description (optional, stored in DB only)
+ * @param {string} params.actorRole - Actor role: 'victim' | 'ngo' | 'ddma' (optional, stored in DB only)
+ * @param {string} params.actorId - Actor UUID (optional, stored in DB only)
  * @returns {Promise<Object>} Audit log record
  */
 async function logAudit(params) {
-    const { entityType, entityId, action, data, oldData, userId } = params;
+    const { 
+        entityType, 
+        entityId, 
+        action, 
+        data, 
+        oldData, 
+        userId,
+        latitude,
+        longitude,
+        locationText,
+        actorRole,
+        actorId
+    } = params;
     
     // Prepare audit data (without personal info)
     const auditData = {
@@ -46,7 +63,7 @@ async function logAudit(params) {
             // Continue with database logging even if blockchain fails
         }
         
-        // Save to database
+        // Save to database (including location fields - NOT sent to blockchain)
         const result = await db.query(
             `INSERT INTO blockchain_audit_logs (
                 entity_type,
@@ -57,19 +74,32 @@ async function logAudit(params) {
                 polygon_tx_hash,
                 polygon_block_number,
                 polygon_timestamp,
-                created_by
-            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+                created_by,
+                latitude,
+                longitude,
+                location_text,
+                actor_role,
+                actor_id
+            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
             RETURNING *`,
             [
                 entityType,
                 entityId,
                 action,
                 oldData ? JSON.stringify(sanitizeForAudit(oldData)) : null,
-                JSON.stringify(auditData.newData),
+                JSON.stringify({
+                    ...auditData.newData,
+                    blockchainResult: blockchainResult?.blockchainResult || null
+                }),
                 blockchainResult?.blockchainResult?.txHash || null,
                 blockchainResult?.blockchainResult?.blockNumber || null,
                 blockchainResult?.blockchainResult?.timestamp ? new Date(blockchainResult.blockchainResult.timestamp) : null,
-                userId
+                userId,
+                latitude || null,
+                longitude || null,
+                locationText || null,
+                actorRole || null,
+                actorId || null
             ]
         );
         
@@ -162,14 +192,23 @@ function dataHash(data) {
  * Log complaint creation
  * @param {Object} complaint - Complaint data
  * @param {string} userId - User ID creating the complaint
+ * @param {Object} options - Optional location and actor information
+ * @param {string} options.latitude - Transaction latitude (optional)
+ * @param {string} options.longitude - Transaction longitude (optional)
+ * @param {string} options.locationText - Location text description (optional)
  */
-async function logComplaintCreation(complaint, userId) {
+async function logComplaintCreation(complaint, userId, options = {}) {
     return await logAudit({
         entityType: 'complaint',
         entityId: complaint.id,
         action: 'created',
         data: complaint,
-        userId
+        userId,
+        latitude: options.latitude,
+        longitude: options.longitude,
+        locationText: options.locationText,
+        actorRole: 'victim',
+        actorId: userId
     });
 }
 
@@ -179,8 +218,13 @@ async function logComplaintCreation(complaint, userId) {
  * @param {Object} oldComplaint - Previous complaint data
  * @param {string} userId - User ID changing status
  * @param {string} reason - Reason for change (for fake_information)
+ * @param {Object} options - Optional location and actor information
+ * @param {string} options.latitude - Transaction latitude (optional)
+ * @param {string} options.longitude - Transaction longitude (optional)
+ * @param {string} options.locationText - Location text description (optional)
+ * @param {string} options.actorRole - Actor role: 'ngo' | 'ddma' | 'sdma' (optional)
  */
-async function logComplaintStatusChange(complaint, oldComplaint, userId, reason = null) {
+async function logComplaintStatusChange(complaint, oldComplaint, userId, reason = null, options = {}) {
     const action = complaint.status === 'fake_information' ? 'fake_info_decision' : 'status_changed';
     
     const auditData = {
@@ -194,7 +238,12 @@ async function logComplaintStatusChange(complaint, oldComplaint, userId, reason 
         action,
         data: auditData,
         oldData: oldComplaint,
-        userId
+        userId,
+        latitude: options.latitude,
+        longitude: options.longitude,
+        locationText: options.locationText,
+        actorRole: options.actorRole || null,
+        actorId: userId
     });
 }
 

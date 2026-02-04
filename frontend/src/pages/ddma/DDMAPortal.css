@@ -144,9 +144,22 @@
     border-color: transparent;
 }
 
+/* KPI Section */
+.ddma-kpi-section {
+    margin-bottom: 1.5rem;
+}
+
 /* Main Content */
 .ddma-portal-main {
     min-height: 400px;
+}
+
+.ddma-map-section,
+.ddma-messages-section {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 /* Responsive Design */

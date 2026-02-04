@@ -6,6 +6,8 @@
 import React, { useState, useEffect } from 'react';
 import { getComplaintsByArea, getComplaintsForArea } from '../../services/api/ddmaApi';
 import SeededBadge from '../common/SeededBadge';
+import SeverityIndicator from '../common/SeverityIndicator';
+import { DDMANoComplaints, DDMASelectArea } from '../common/EmptyState';
 import './AreaWiseComplaints.css';
 
 const AreaWiseComplaints = ({ onComplaintSelect }) => {

@@ -104,3 +104,6 @@ a:hover {
 ::-webkit-scrollbar-thumb:hover {
     background: #555;
 }
+
+/* Import dashboard shared styles */
+@import './dashboard.css';

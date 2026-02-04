@@ -8,6 +8,11 @@ import OrganizationLogin from '../../components/auth/OrganizationLogin';
 import AreaWiseComplaints from '../../components/ddma/AreaWiseComplaints';
 import NGOCoordination from '../../components/ddma/NGOCoordination';
 import DDMAComplaintDetail from '../../components/ddma/DDMAComplaintDetail';
+import KPIDashboard from '../../components/common/KPIDashboard';
+import RescueMap from '../../components/common/RescueMap';
+import NotificationBell from '../../components/common/NotificationBell';
+import MessagingPanel from '../../components/common/MessagingPanel';
+import { DDMANoComplaints } from '../../components/common/EmptyState';
 import { getCurrentUser } from '../../services/api/ddmaApi';
 import './DDMAPortal.css';
 
@@ -15,7 +20,7 @@ const DDMAPortal = () => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [currentView, setCurrentView] = useState('areas'); // 'areas', 'coordination', 'detail'
+    const [currentView, setCurrentView] = useState('areas'); // 'areas', 'coordination', 'map', 'messages', 'detail'
     const [selectedComplaintId, setSelectedComplaintId] = useState(null);
 
     useEffect(() => {
@@ -81,6 +86,13 @@ const DDMAPortal = () => {
         setCurrentView('detail');
     };
 
+    const handleMapComplaintSelect = (complaintId, { source }) => {
+        setSelectedComplaintId(complaintId);
+        if (source === 'popup-button') {
+            setCurrentView('detail');
+        }
+    };
+
     const handleBackToAreas = () => {
         setCurrentView('areas');
         setSelectedComplaintId(null);
@@ -135,6 +147,16 @@ const DDMAPortal = () => {
                             <p className="portal-subtitle">District Disaster Management Authority</p>
                         </div>
                         <div className="header-actions">
+                            <NotificationBell
+                                onComplaintClick={(id) => {
+                                    setSelectedComplaintId(id);
+                                    setCurrentView('detail');
+                                }}
+                                onMessageClick={(p) => {
+                                    setMessageRecipient(p?.senderId ? { userId: p.senderId, userName: p.senderName } : null);
+                                    setCurrentView('messages');
+                                }}
+                            />
                             <div className="user-info">
                                 <span className="user-name">🏛️ {user?.name || 'DDMA'}</span>
                                 <span className="user-type">({user?.userType?.toUpperCase() || 'DDMA'})</span>
@@ -155,7 +177,16 @@ const DDMAPortal = () => {
                         }}
                         className={`nav-tab ${currentView === 'areas' ? 'active' : ''}`}
                     >
-                        📍 Area-wise Complaints
+                        Area-wise Complaints
+                    </button>
+                    <button
+                        onClick={() => {
+                            setCurrentView('map');
+                            setSelectedComplaintId(null);
+                        }}
+                        className={`nav-tab ${currentView === 'map' ? 'active' : ''}`}
+                    >
+                        Map
                     </button>
                     <button
                         onClick={() => {
@@ -164,17 +195,38 @@ const DDMAPortal = () => {
                         }}
                         className={`nav-tab ${currentView === 'coordination' ? 'active' : ''}`}
                     >
-                        🤝 NGO Coordination
+                        NGO Coordination
+                    </button>
+                    <button
+                        onClick={() => {
+                            setCurrentView('messages');
+                            setSelectedComplaintId(null);
+                        }}
+                        className={`nav-tab ${currentView === 'messages' ? 'active' : ''}`}
+                    >
+                        Messages
                     </button>
                     {currentView === 'detail' && selectedComplaintId && (
                         <button
                             onClick={handleBackToAreas}
                             className="nav-tab active"
                         >
-                            📋 Complaint Detail
+                            Complaint Detail
                         </button>
                     )}
                 </nav>
+
+                {/* KPI Dashboard - show on areas, map, coordination views */}
+                {(currentView === 'areas' || currentView === 'map' || currentView === 'coordination') && (
+                    <section className="ddma-kpi-section">
+                        <KPIDashboard
+                            token={localStorage.getItem('token')}
+                            variant="full"
+                            showSeverity={true}
+                            refreshInterval={30000}
+                        />
+                    </section>
+                )}
 
                 {/* Main Content */}
                 <main className="ddma-portal-main">
@@ -184,11 +236,37 @@ const DDMAPortal = () => {
                         />
                     )}
 
+                    {currentView === 'map' && (
+                        <section className="ddma-map-section">
+                            <RescueMap
+                                userType="ddma"
+                                height="500px"
+                                selectedComplaintId={selectedComplaintId}
+                                onComplaintSelect={handleMapComplaintSelect}
+                                onViewDetails={(id) => {
+                                    setSelectedComplaintId(id);
+                                    setCurrentView('detail');
+                                }}
+                                showLayerControl={true}
+                            />
+                        </section>
+                    )}
+
                     {currentView === 'coordination' && (
                         <NGOCoordination
                             selectedComplaintId={selectedComplaintId}
                             onAssignmentSuccess={handleAssignmentSuccess}
                         />
+                    )}
+
+                    {currentView === 'messages' && (
+                        <section className="ddma-messages-section">
+                            <MessagingPanel
+                                userType="ddma"
+                                initialOtherUserId={messageRecipient?.userId}
+                                initialOtherUserName={messageRecipient?.userName}
+                            />
+                        </section>
                     )}
 
                     {currentView === 'detail' && selectedComplaintId && (

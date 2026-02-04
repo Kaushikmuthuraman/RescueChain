@@ -28,4 +28,9 @@ router.get('/donations', sdmaController.getAllDonations);
 // Get audit timeline/blockchain logs
 router.get('/audit-timeline', sdmaController.getAuditTimeline);
 
+// Exports (CSV/PDF)
+router.get('/export/complaints', sdmaController.exportComplaints);
+router.get('/export/donations', sdmaController.exportDonations);
+router.get('/export/ngo-performance', sdmaController.exportNGOPerformance);
+
 module.exports = router;

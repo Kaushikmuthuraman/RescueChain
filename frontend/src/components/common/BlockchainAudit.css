@@ -1,0 +1,208 @@
+/**
+ * Blockchain Audit Component Styles
+ */
+
+.blockchain-audit {
+    background: white;
+    border: 2px solid #dee2e6;
+    border-radius: 12px;
+    padding: 25px;
+    margin-top: 25px;
+}
+
+.blockchain-audit h3 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #1e3c72;
+    margin: 0 0 20px 0;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #e9ecef;
+}
+
+.blockchain-audit-loading,
+.blockchain-audit-empty {
+    text-align: center;
+    padding: 40px 20px;
+    color: #6c757d;
+}
+
+.audit-logs-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.audit-log-item {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 20px;
+    transition: box-shadow 0.2s;
+}
+
+.audit-log-item:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.audit-log-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.audit-log-title {
+    font-weight: 600;
+    color: #1e3c72;
+    font-size: 1.1rem;
+}
+
+.audit-log-date {
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+.audit-log-field {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+}
+
+.field-icon {
+    font-size: 1.2rem;
+    width: 24px;
+    text-align: center;
+}
+
+.field-label {
+    font-weight: 500;
+    color: #495057;
+    min-width: 120px;
+}
+
+.field-value {
+    color: #212529;
+}
+
+.tx-hash-link {
+    color: #0066cc;
+    text-decoration: none;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem;
+    transition: color 0.2s;
+}
+
+.tx-hash-link:hover {
+    color: #0052a3;
+    text-decoration: underline;
+}
+
+.audit-log-location {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #dee2e6;
+}
+
+.location-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.location-title {
+    font-weight: 600;
+    color: #1e3c72;
+    font-size: 1rem;
+}
+
+.location-text {
+    background: #e9ecef;
+    padding: 10px 15px;
+    border-radius: 6px;
+    margin-bottom: 10px;
+    color: #495057;
+    font-size: 0.95rem;
+}
+
+.location-coordinates {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 15px;
+}
+
+.coordinates-text {
+    font-family: 'Courier New', monospace;
+    color: #495057;
+    font-size: 0.9rem;
+}
+
+.location-map {
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-top: 10px;
+}
+
+.location-map iframe {
+    display: block;
+    border: none;
+}
+
+.map-footer {
+    padding: 8px 12px;
+    background: #f8f9fa;
+    text-align: center;
+    border-top: 1px solid #dee2e6;
+}
+
+.map-link {
+    color: #0066cc;
+    text-decoration: none;
+    font-size: 0.85rem;
+    transition: color 0.2s;
+}
+
+.map-link:hover {
+    color: #0052a3;
+    text-decoration: underline;
+}
+
+.audit-log-no-location {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #dee2e6;
+    color: #6c757d;
+    font-style: italic;
+}
+
+.no-location-text {
+    font-size: 0.9rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .audit-log-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    .audit-log-field {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+    }
+
+    .field-label {
+        min-width: auto;
+    }
+}

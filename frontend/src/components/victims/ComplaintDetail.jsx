@@ -6,6 +6,9 @@
 import React, { useState, useEffect } from 'react';
 import { getComplaint, getComplaintTimeline, getComplaintPhotos } from '../../services/api/victimApi';
 import SeededBadge from '../common/SeededBadge';
+import BlockchainAudit from '../common/BlockchainAudit';
+import ComplaintTimeline from '../common/ComplaintTimeline';
+import SeverityIndicator from '../common/SeverityIndicator';
 import './ComplaintDetail.css';
 
 const ComplaintDetail = ({ complaintId, onBack }) => {
@@ -113,9 +116,7 @@ const ComplaintDetail = ({ complaintId, onBack }) => {
                         <span className={`status-badge status-${complaint.status}`}>
                             {getStatusLabel(complaint.status)}
                         </span>
-                        <span className={`urgency-badge urgency-${complaint.urgency_level}`}>
-                            {complaint.urgency_level}
-                        </span>
+                        <SeverityIndicator level={complaint.urgency_level} size="medium" />
                         <SeededBadge isSeeded={complaint.is_seeded || complaint.isSeeded} />
                     </div>
 
@@ -157,48 +158,13 @@ const ComplaintDetail = ({ complaintId, onBack }) => {
                 {/* Status Timeline */}
                 <div className="timeline-card">
                     <h3>Status Timeline</h3>
-                    {timeline.length > 0 ? (
-                        <div className="timeline">
-                            {timeline.map((item, index) => (
-                                <div key={item.id} className="timeline-item">
-                                    <div className="timeline-marker">
-                                        <span className="timeline-icon">
-                                            {getStatusIcon(item.newStatus)}
-                                        </span>
-                                    </div>
-                                    <div className="timeline-content">
-                                        <div className="timeline-header">
-                                            <span className="timeline-status">
-                                                {item.oldStatus
-                                                    ? `${getStatusLabel(item.oldStatus)} → ${getStatusLabel(item.newStatus)}`
-                                                    : `Status: ${getStatusLabel(item.newStatus)}`}
-                                            </span>
-                                            <span className="timeline-date">
-                                                {formatDate(item.createdAt)}
-                                            </span>
-                                        </div>
-                                        {item.changedByName && (
-                                            <div className="timeline-user">
-                                                Changed by: {item.changedByName}
-                                                {item.changedByType && (
-                                                    <span className="user-type"> ({item.changedByType})</span>
-                                                )}
-                                            </div>
-                                        )}
-                                        {item.notes && (
-                                            <div className="timeline-notes">
-                                                {item.notes}
-                                            </div>
-                                        )}
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    ) : (
-                        <div className="timeline-empty">
-                            <p>No status history available</p>
-                        </div>
-                    )}
+                    <ComplaintTimeline
+                        currentStatus={complaint.status}
+                        createdAt={complaint.created_at}
+                        timeline={timeline}
+                        variant="vertical"
+                        showActors={true}
+                    />
                 </div>
 
                 {/* Photos */}
@@ -233,6 +199,9 @@ const ComplaintDetail = ({ complaintId, onBack }) => {
                         </div>
                     </div>
                 )}
+
+                {/* Blockchain Audit Logs */}
+                <BlockchainAudit complaintId={complaintId} />
             </div>
         </div>
     );

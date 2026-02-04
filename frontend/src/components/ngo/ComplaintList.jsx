@@ -6,6 +6,8 @@
 import React, { useState, useEffect } from 'react';
 import { getComplaints } from '../../services/api/ngoApi';
 import SeededBadge from '../common/SeededBadge';
+import SeverityIndicator from '../common/SeverityIndicator';
+import { NGONoAssignments, NoResults } from '../common/EmptyState';
 import './ComplaintList.css';
 
 const ComplaintList = ({ onComplaintSelect }) => {
@@ -154,11 +156,11 @@ const ComplaintList = ({ onComplaintSelect }) => {
 
             {/* Complaints Grid */}
             {filteredComplaints.length === 0 ? (
-                <div className="complaint-list-empty">
-                    <div className="empty-icon">📝</div>
-                    <h3>No Complaints</h3>
-                    <p>No complaints match your current filter.</p>
-                </div>
+                filter === 'all' && complaints.length === 0 ? (
+                    <NGONoAssignments />
+                ) : (
+                    <NoResults />
+                )
             ) : (
                 <div className="complaints-grid">
                     {filteredComplaints.map((complaint) => (
@@ -171,9 +173,11 @@ const ComplaintList = ({ onComplaintSelect }) => {
                                 <span className={`status-badge ${getStatusBadgeClass(complaint.status)}`}>
                                     {getStatusLabel(complaint.status)}
                                 </span>
-                                <span className={`urgency-badge ${getUrgencyBadgeClass(complaint.urgency_level)}`}>
-                                    {complaint.urgency_level}
-                                </span>
+                                <SeverityIndicator 
+                                    level={complaint.urgency_level} 
+                                    size="small"
+                                    pulse={complaint.urgency_level === 'critical'}
+                                />
                                 <SeededBadge isSeeded={complaint.is_seeded || complaint.isSeeded} />
                             </div>
 

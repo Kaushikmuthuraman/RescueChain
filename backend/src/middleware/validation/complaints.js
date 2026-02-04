@@ -5,28 +5,7 @@
 
 const { AppError, asyncHandler } = require('../errorHandler');
 
-/**
- * Valid status order for transitions
- * Statuses cannot be skipped
- */
-const STATUS_ORDER = {
-    'submitted': 0,
-    'accepted': 1,
-    'arriving': 2,
-    'in_progress': 3,
-    'resolved': 4,
-    'fake_information': 99 // Terminal status
-};
-
-/**
- * Statuses that require photo evidence
- */
-const STATUSES_REQUIRING_PHOTO = ['arriving', 'in_progress', 'resolved', 'fake_information'];
-
-/**
- * Terminal statuses (cannot transition from these)
- */
-const TERMINAL_STATUSES = ['fake_information'];
+const { complaintWorkflow, validateComplaintTransition } = require('../../config/workflows');
 
 /**
  * Validate complaint creation request
@@ -73,7 +52,7 @@ const validateStatusUpdate = asyncHandler(async (req, res, next) => {
         });
     }
     
-    const validStatuses = Object.keys(STATUS_ORDER);
+    const validStatuses = complaintWorkflow.statuses;
     if (!validStatuses.includes(status)) {
         return res.status(400).json({
             success: false,
@@ -97,62 +76,21 @@ const validateStatusUpdate = asyncHandler(async (req, res, next) => {
     const complaint = complaintResult.rows[0];
     const currentStatus = complaint.status;
     
-    // Check if complaint is in terminal status
-    // SDMA can override terminal status (fake_information)
+    // Validate transition via config-driven workflow
     const user = req.user;
     const isSDMA = user && user.userType === 'sdma';
-    
-    if (TERMINAL_STATUSES.includes(currentStatus) && !isSDMA) {
+    const { ok, errorCode, message } = validateComplaintTransition(currentStatus, status, { isSDMA });
+    if (!ok) {
         return res.status(400).json({
             success: false,
-            error: 'TERMINAL_STATUS',
-            message: `Cannot update status from terminal status: ${currentStatus}. Only SDMA can override locked complaints.`
+            error: errorCode,
+            message
         });
     }
     
-    // Validate status transition (cannot skip statuses)
-    if (status !== currentStatus) {
-        const currentOrder = STATUS_ORDER[currentStatus];
-        const newOrder = STATUS_ORDER[status];
-        
-        // Allow transitions to fake_information from any status
-        if (status === 'fake_information') {
-            // This is allowed from any non-terminal status
-        } else {
-            // For normal flow, check if transition is sequential
-            // Allow going to any later status (not skipping backwards is handled implicitly)
-            if (newOrder <= currentOrder) {
-                return res.status(400).json({
-                    success: false,
-                    error: 'INVALID_TRANSITION',
-                    message: `Invalid status transition from ${currentStatus} to ${status}. Statuses cannot be skipped.`
-                });
-            }
-            
-            // Check for skipping statuses (must be next in sequence)
-            // Allow: submitted→accepted, accepted→arriving, arriving→in_progress, in_progress→resolved
-            const expectedNextStatuses = {
-                'submitted': ['accepted', 'fake_information'],
-                'accepted': ['arriving', 'fake_information'],
-                'arriving': ['in_progress', 'fake_information'],
-                'in_progress': ['resolved', 'fake_information']
-            };
-            
-            if (expectedNextStatuses[currentStatus] && !expectedNextStatuses[currentStatus].includes(status)) {
-                return res.status(400).json({
-                    success: false,
-                    error: 'STATUS_SKIP_NOT_ALLOWED',
-                    message: `Cannot skip statuses. Valid transitions from ${currentStatus}: ${expectedNextStatuses[currentStatus].join(', ')}`
-                });
-            }
-        }
-    }
-    
-    // Validate photo requirements
-    // Accepted status does NOT require photo
-    // All other statuses REQUIRE photo
+    // Validate photo requirements from workflow config
     // Can be file upload (req.file) or already-processed photo CID
-    if (STATUSES_REQUIRING_PHOTO.includes(status)) {
+    if (complaintWorkflow.photoRequired[status]) {
         const { photoCid } = req.body;
         if (!req.file && !photoCid) {
             return res.status(400).json({
@@ -163,7 +101,7 @@ const validateStatusUpdate = asyncHandler(async (req, res, next) => {
         }
     }
     
-    // Validate fake_information requires reason
+    // Validate any extra per-status rules
     if (status === 'fake_information') {
         const { reason } = req.body;
         if (!reason || typeof reason !== 'string' || reason.trim() === '') {
@@ -183,8 +121,5 @@ const validateStatusUpdate = asyncHandler(async (req, res, next) => {
 
 module.exports = {
     validateCreateComplaint,
-    validateStatusUpdate,
-    STATUS_ORDER,
-    STATUSES_REQUIRING_PHOTO,
-    TERMINAL_STATUSES
+    validateStatusUpdate
 };

@@ -9,6 +9,8 @@ const { ipfsService } = require('../services/photo/ipfsService');
 const { extractEXIF } = require('../services/photo/exifService');
 const { validatePhoto } = require('../services/photo/photoValidationService');
 const { logComplaintCreation, logComplaintStatusChange } = require('../services/polygon/auditLogger');
+const { onComplaintCreated, onComplaintStatusChanged } = require('../services/integrations/hooks');
+const notificationService = require('../services/notifications/notificationService');
 
 /**
  * Get all complaints (with filters)
@@ -167,7 +169,7 @@ const createComplaint = asyncHandler(async (req, res) => {
         });
     }
     
-    const { complaintText, location, latitude, longitude, urgencyLevel, photoUrl } = req.body;
+    const { complaintText, location, latitude, longitude, urgencyLevel, disasterType, photoUrl } = req.body;
     const user = req.user;
     
     if (user.userType !== 'victim') {
@@ -183,10 +185,18 @@ const createComplaint = asyncHandler(async (req, res) => {
     // specific statuses ('arriving', 'in_progress', 'resolved'), so photo
     // will be stored when status changes to one of those statuses
     const result = await db.query(
-        `INSERT INTO complaints (victim_id, complaint_text, location, latitude, longitude, urgency_level, status)
-         VALUES ($1, $2, $3, $4, $5, $6, 'submitted')
+        `INSERT INTO complaints (victim_id, complaint_text, location, latitude, longitude, urgency_level, disaster_type, status)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, 'submitted')
          RETURNING *`,
-        [user.userId, complaintText, location, latitude || null, longitude || null, urgencyLevel || 'medium']
+        [
+            user.userId,
+            complaintText,
+            location,
+            latitude || null,
+            longitude || null,
+            urgencyLevel || 'medium',
+            disasterType || null
+        ]
     );
     
     const complaint = result.rows[0];
@@ -201,13 +211,35 @@ const createComplaint = asyncHandler(async (req, res) => {
         [user.userId, 'Complaint created with photo', complaint.id]
     );
     
-    // Log to blockchain audit (non-blocking)
+    // Log to blockchain audit (non-blocking) with location data
     try {
-        await logComplaintCreation(complaint, user.userId);
+        await logComplaintCreation(complaint, user.userId, {
+            latitude: latitude || null,
+            longitude: longitude || null,
+            locationText: location || null
+        });
     } catch (auditError) {
         console.error('Audit logging failed (non-blocking):', auditError);
         // Continue even if audit logging fails
     }
+
+    try {
+        await notificationService.notifyComplaintCreated({
+            complaintId: complaint.id,
+            victimId: complaint.victim_id,
+            location: complaint.location,
+        });
+    } catch (notifErr) {
+        console.error('Notification failed (non-blocking):', notifErr);
+    }
+
+    // Fire third-party integration hook (non-blocking, optional)
+    onComplaintCreated({
+        complaintId: complaint.id,
+        victimId: complaint.victim_id,
+        location: complaint.location,
+        createdAt: complaint.created_at
+    });
     
     res.status(201).json({
         success: true,
@@ -229,7 +261,7 @@ const createComplaint = asyncHandler(async (req, res) => {
  */
 const updateComplaintStatus = asyncHandler(async (req, res) => {
     const { id } = req.params;
-    const { status, notes, photoCid, reason } = req.body;
+    const { status, notes, photoCid, reason, latitude, longitude, locationText } = req.body;
     const user = req.user;
     const complaint = req.complaint; // Set by validation middleware
     const file = req.file; // File upload from multer
@@ -240,30 +272,16 @@ const updateComplaintStatus = asyncHandler(async (req, res) => {
     
     const currentStatus = complaint.status;
     
-    // Terminal status check (already validated in middleware, but double-check)
-    // SDMA can override terminal status (fake_information)
-    const TERMINAL_STATUSES = ['fake_information'];
-    const isSDMA = user.userType === 'sdma';
-    
-    if (TERMINAL_STATUSES.includes(currentStatus) && !isSDMA) {
-        throw new AppError(`Cannot update status from terminal status: ${currentStatus}. Only SDMA can override locked complaints.`, 400, 'TERMINAL_STATUS');
-    }
-    
-    // Validate fake_information requires reason
-    if (status === 'fake_information') {
-        if (!reason || typeof reason !== 'string' || reason.trim() === '') {
-            throw new AppError('Reason is required when marking complaint as fake_information', 400, 'REASON_REQUIRED');
-        }
-    }
+    // Transition validity and basic checks are enforced in validation middleware
+    // Here we enforce photo and reason rules at the persistence layer as a safeguard.
     
     // Photo requirement validation and processing
-    // Accepted does NOT require photo
-    // All other statuses REQUIRE photo with EXIF extraction and validation
-    const STATUSES_REQUIRING_PHOTO = ['arriving', 'in_progress', 'resolved', 'fake_information'];
+    // Accepted does NOT require photo, others may require it per workflow config
+    const { complaintWorkflow } = require('../config/workflows');
     let exifData = null;
     let ipfsCid = photoCid; // Use provided CID or process file upload
     
-    if (STATUSES_REQUIRING_PHOTO.includes(status)) {
+    if (complaintWorkflow.photoRequired[status]) {
         if (!file && !photoCid) {
             throw new AppError(`Photo is required for status: ${status}. Photo is not required for 'accepted' status.`, 400, 'PHOTO_REQUIRED');
         }
@@ -365,13 +383,58 @@ const updateComplaintStatus = asyncHandler(async (req, res) => {
         
         await client.query('COMMIT');
         
-        // Log to blockchain audit (non-blocking)
+        // Log to blockchain audit (non-blocking) with location data
+        // Use EXIF location if available, otherwise use request body location
+        const transactionLatitude = latitude || (exifData ? exifData.latitude?.toString() : null);
+        const transactionLongitude = longitude || (exifData ? exifData.longitude?.toString() : null);
+        const transactionLocationText = locationText || null;
+        
+        // Determine actor role based on user type (only for NGO and DDMA)
+        const actorRole = (user.userType === 'ngo' || user.userType === 'ddma') ? user.userType : null;
+        
         try {
-            await logComplaintStatusChange(updatedComplaint, complaint, user.userId, reason || null);
+            await logComplaintStatusChange(updatedComplaint, complaint, user.userId, reason || null, {
+                latitude: transactionLatitude,
+                longitude: transactionLongitude,
+                locationText: transactionLocationText,
+                actorRole: actorRole
+            });
         } catch (auditError) {
             console.error('Audit logging failed (non-blocking):', auditError);
             // Continue even if audit logging fails
         }
+
+        try {
+            await notificationService.notifyStatusUpdate({
+                complaintId: id,
+                oldStatus: currentStatus,
+                newStatus: status,
+                changedByName: user.userType,
+                victimId: updatedComplaint.victim_id,
+                assignedToId: updatedComplaint.assigned_to,
+                location: updatedComplaint.location,
+            });
+            if (status === 'resolved') {
+                await notificationService.notifyResolution({
+                    complaintId: id,
+                    victimId: updatedComplaint.victim_id,
+                    assignedToId: updatedComplaint.assigned_to,
+                    location: updatedComplaint.location,
+                });
+            }
+        } catch (notifErr) {
+            console.error('Notification failed (non-blocking):', notifErr);
+        }
+
+        // Fire third-party integration hook (non-blocking, optional)
+        onComplaintStatusChanged({
+            complaintId: id,
+            oldStatus: currentStatus,
+            newStatus: status,
+            actorUserId: user.userId,
+            actorRole: user.userType,
+            updatedAt: updatedComplaint.updated_at
+        });
         
         res.json({
             success: true,
@@ -399,7 +462,6 @@ const assignComplaint = asyncHandler(async (req, res) => {
     const { assignedTo } = req.body;
     const user = req.user;
     
-    // Only DDMA and SDMA can assign complaints
     if (user.userType !== 'ddma' && user.userType !== 'sdma') {
         throw new AppError('Only DDMA and SDMA can assign complaints', 403, 'FORBIDDEN');
     }
@@ -420,10 +482,30 @@ const assignComplaint = asyncHandler(async (req, res) => {
         throw new AppError('Complaint not found', 404, 'NOT_FOUND');
     }
     
+    const complaint = result.rows[0];
+
+    try {
+        const assignerRes = await db.query(
+            `SELECT u.name, COALESCE(n.organization_name, u.name) as org_name 
+             FROM users u LEFT JOIN ngos n ON u.id = n.user_id WHERE u.id = $1`,
+            [assignedTo]
+        );
+        const assignedByName = assignerRes.rows[0]?.org_name || assignerRes.rows[0]?.name || 'Organization';
+        await notificationService.notifyAssignment({
+            complaintId: id,
+            assignedToId: assignedTo,
+            assignedByName,
+            victimId: complaint.victim_id,
+            location: complaint.location,
+        });
+    } catch (notifErr) {
+        console.error('Notification failed (non-blocking):', notifErr);
+    }
+    
     res.json({
         success: true,
         message: 'Complaint assigned successfully',
-        data: { complaint: result.rows[0] }
+        data: { complaint }
     });
 });
 

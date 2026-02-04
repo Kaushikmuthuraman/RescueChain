@@ -5,6 +5,8 @@
 
 const db = require('../../config/database');
 const { AppError, asyncHandler } = require('../../middleware/errorHandler');
+const { AUDIT_RETENTION_DAYS, EXPORT_RETENTION_DAYS, clampStartDate } = require('../../config/retention');
+const PDFDocument = require('pdfkit');
 
 /**
  * Get comprehensive system overview (SDMA only)
@@ -317,7 +319,7 @@ const getDonationAnalytics = asyncHandler(async (req, res) => {
  * GET /api/sdma/audit-timeline
  */
 const getAuditTimeline = asyncHandler(async (req, res) => {
-    const { entityType, entityId, action, limit = 100, offset = 0 } = req.query;
+    const { entityType, entityId, action, actorRole, fromDate, toDate, limit = 100, offset = 0 } = req.query;
     const user = req.user;
     
     // Only SDMA can access this endpoint
@@ -354,6 +356,26 @@ const getAuditTimeline = asyncHandler(async (req, res) => {
         query += ` AND bal.action = $${paramCount}`;
         params.push(action);
     }
+
+    if (actorRole) {
+        paramCount++;
+        query += ` AND bal.actor_role = $${paramCount}`;
+        params.push(actorRole);
+    }
+
+    // Apply retention-aware date filtering
+    const requestedFrom = fromDate ? new Date(fromDate) : null;
+    const requestedTo = toDate ? new Date(toDate) : null;
+    const from = clampStartDate(requestedFrom, AUDIT_RETENTION_DAYS);
+    const to = requestedTo && !Number.isNaN(requestedTo.getTime()) ? requestedTo : new Date();
+
+    paramCount++;
+    query += ` AND bal.created_at >= $${paramCount}`;
+    params.push(from);
+
+    paramCount++;
+    query += ` AND bal.created_at <= $${paramCount}`;
+    params.push(to);
     
     query += ` ORDER BY bal.created_at DESC LIMIT $${paramCount + 1} OFFSET $${paramCount + 2}`;
     params.push(parseInt(limit), parseInt(offset));
@@ -380,7 +402,12 @@ const getAuditTimeline = asyncHandler(async (req, res) => {
         success: true,
         data: {
             auditLogs,
-            count: auditLogs.length
+            count: auditLogs.length,
+            retention: {
+                from,
+                to,
+                maxDays: AUDIT_RETENTION_DAYS
+            }
         }
     });
 });
@@ -455,10 +482,353 @@ const getAllDonations = asyncHandler(async (req, res) => {
     });
 });
 
+/**
+ * Helper: build CSV from headers + rows
+ */
+function buildCsv(headers, rows) {
+    const escape = (value) => {
+        if (value == null) return '';
+        const str = String(value);
+        if (str.includes('"') || str.includes(',') || str.includes('\n')) {
+            return `"${str.replace(/"/g, '""')}"`;
+        }
+        return str;
+    };
+    const headerLine = headers.join(',');
+    const dataLines = rows.map(row => headers.map(h => escape(row[h])).join(','));
+    return [headerLine, ...dataLines].join('\n');
+}
+
+/**
+ * Helper: set CSV headers
+ */
+function setCsvHeaders(res, filename) {
+    res.setHeader('Content-Type', 'text/csv');
+    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+}
+
+/**
+ * Helper: set PDF headers
+ */
+function setPdfHeaders(res, filename) {
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+}
+
+/**
+ * Export complaints (CSV/PDF, SDMA only)
+ * GET /api/sdma/export/complaints?format=csv|pdf
+ */
+const exportComplaints = asyncHandler(async (req, res) => {
+    const user = req.user;
+    const { status, assignedTo, location, format = 'csv' } = req.query;
+
+    if (user.userType !== 'sdma') {
+        throw new AppError('Access denied. SDMA only.', 403, 'FORBIDDEN');
+    }
+
+    // Reuse getAllComplaints query structure but without limit/offset and with retention
+    let query = `
+        SELECT c.*, 
+               u.name as victim_name,
+               u.phone_number as victim_phone,
+               assigned_user.name as assigned_to_name,
+               assigned_user.user_type as assigned_to_type
+        FROM complaints c
+        INNER JOIN users u ON c.victim_id = u.id
+        LEFT JOIN users assigned_user ON c.assigned_to = assigned_user.id
+        WHERE 1=1
+    `;
+
+    const params = [];
+    let paramCount = 0;
+
+    if (status) {
+        paramCount++;
+        query += ` AND c.status = $${paramCount}`;
+        params.push(status);
+    }
+
+    if (assignedTo) {
+        paramCount++;
+        query += ` AND c.assigned_to = $${paramCount}`;
+        params.push(assignedTo);
+    }
+
+    if (location) {
+        paramCount++;
+        query += ` AND c.location ILIKE $${paramCount}`;
+        params.push(`%${location}%`);
+    }
+
+    // Apply export retention on created_at
+    const from = clampStartDate(null, EXPORT_RETENTION_DAYS);
+    paramCount++;
+    query += ` AND c.created_at >= $${paramCount}`;
+    params.push(from);
+
+    query += ` ORDER BY c.created_at DESC`;
+
+    const result = await db.query(query, params);
+
+    const rows = result.rows.map(row => ({
+        id: row.id,
+        createdAt: row.created_at,
+        status: row.status,
+        urgencyLevel: row.urgency_level,
+        location: row.location,
+        latitude: row.latitude,
+        longitude: row.longitude,
+        victimName: row.victim_name,
+        victimPhone: row.victim_phone,
+        assignedToName: row.assigned_to_name,
+        assignedToType: row.assigned_to_type
+    }));
+
+    const filename = `complaints_${new Date().toISOString().slice(0, 10)}.${format === 'pdf' ? 'pdf' : 'csv'}`;
+
+    if (format === 'pdf') {
+        setPdfHeaders(res, filename);
+        const doc = new PDFDocument({ margin: 40, size: 'A4' });
+        doc.pipe(res);
+
+        doc.fontSize(16).text('Complaints Export', { align: 'left' });
+        doc.moveDown(0.5);
+        doc.fontSize(10).text(`Generated: ${new Date().toLocaleString()}`);
+        doc.text(`Retention window: last ${EXPORT_RETENTION_DAYS} days`);
+        doc.moveDown();
+
+        rows.forEach((row) => {
+            doc.fontSize(10).text(
+                `ID: ${String(row.id).slice(0, 8)}... | Status: ${row.status} | Severity: ${row.urgencyLevel || ''}`
+            );
+            doc.text(`Location: ${row.location || '—'} (${row.latitude || '-'}, ${row.longitude || '-'})`);
+            doc.text(`Victim: ${row.victimName || '—'} (${row.victimPhone || '—'})`);
+            doc.text(`Assigned: ${row.assignedToName || '—'} [${row.assignedToType || '-'}]`);
+            doc.text(`Created: ${row.createdAt}`);
+            doc.moveDown(0.7);
+        });
+
+        doc.end();
+    } else {
+        const headers = [
+            'id',
+            'createdAt',
+            'status',
+            'urgencyLevel',
+            'location',
+            'latitude',
+            'longitude',
+            'victimName',
+            'victimPhone',
+            'assignedToName',
+            'assignedToType'
+        ];
+        const csv = buildCsv(headers, rows);
+        setCsvHeaders(res, filename);
+        res.send(csv);
+    }
+});
+
+/**
+ * Export donations (CSV/PDF, SDMA only)
+ * GET /api/sdma/export/donations?format=csv|pdf
+ */
+const exportDonations = asyncHandler(async (req, res) => {
+    const user = req.user;
+    const { status, ngoId, format = 'csv' } = req.query;
+
+    if (user.userType !== 'sdma') {
+        throw new AppError('Access denied. SDMA only.', 403, 'FORBIDDEN');
+    }
+
+    let query = `
+        SELECT d.*, 
+               u.name as ngo_name,
+               n.organization_name
+        FROM donations d
+        LEFT JOIN users u ON d.ngo_id = u.id
+        LEFT JOIN ngos n ON u.id = n.user_id
+        WHERE 1=1
+    `;
+
+    const params = [];
+    let paramCount = 0;
+
+    if (status) {
+        paramCount++;
+        query += ` AND d.status = $${paramCount}`;
+        params.push(status);
+    }
+
+    if (ngoId) {
+        paramCount++;
+        query += ` AND d.ngo_id = $${paramCount}`;
+        params.push(ngoId);
+    }
+
+    // Apply export retention on created_at
+    const from = clampStartDate(null, EXPORT_RETENTION_DAYS);
+    paramCount++;
+    query += ` AND d.created_at >= $${paramCount}`;
+    params.push(from);
+
+    query += ` ORDER BY d.created_at DESC`;
+
+    const result = await db.query(query, params);
+
+    const rows = result.rows.map(row => ({
+        id: row.id,
+        createdAt: row.created_at,
+        status: row.status,
+        amount: row.amount ? parseFloat(row.amount) : null,
+        ngoName: row.organization_name || row.ngo_name,
+        donorName: row.donor_name,
+        donorPhone: row.donor_phone,
+        donorEmail: row.donor_email,
+        complaintId: row.complaint_id,
+        upiTransactionId: row.upi_transaction_id
+    }));
+
+    const filename = `donations_${new Date().toISOString().slice(0, 10)}.${format === 'pdf' ? 'pdf' : 'csv'}`;
+
+    if (format === 'pdf') {
+        setPdfHeaders(res, filename);
+        const doc = new PDFDocument({ margin: 40, size: 'A4' });
+        doc.pipe(res);
+
+        doc.fontSize(16).text('Donations Export', { align: 'left' });
+        doc.moveDown(0.5);
+        doc.fontSize(10).text(`Generated: ${new Date().toLocaleString()}`);
+        doc.text(`Retention window: last ${EXPORT_RETENTION_DAYS} days`);
+        doc.moveDown();
+
+        rows.forEach((row) => {
+            doc.fontSize(10).text(
+                `ID: ${String(row.id).slice(0, 8)}... | Status: ${row.status} | Amount: ${row.amount ?? 'N/A'}`
+            );
+            doc.text(`NGO: ${row.ngoName || '—'}`);
+            doc.text(`Donor: ${row.donorName || '—'} (${row.donorPhone || '—'}, ${row.donorEmail || '—'})`);
+            if (row.complaintId) {
+                doc.text(`Complaint: ${String(row.complaintId).slice(0, 8)}...`);
+            }
+            doc.text(`UPI Tx: ${row.upiTransactionId || '—'}`);
+            doc.text(`Created: ${row.createdAt}`);
+            doc.moveDown(0.7);
+        });
+
+        doc.end();
+    } else {
+        const headers = [
+            'id',
+            'createdAt',
+            'status',
+            'amount',
+            'ngoName',
+            'donorName',
+            'donorPhone',
+            'donorEmail',
+            'complaintId',
+            'upiTransactionId'
+        ];
+        const csv = buildCsv(headers, rows);
+        setCsvHeaders(res, filename);
+        res.send(csv);
+    }
+});
+
+/**
+ * Export NGO performance (CSV/PDF, SDMA only)
+ * GET /api/sdma/export/ngo-performance?format=csv|pdf
+ */
+const exportNGOPerformance = asyncHandler(async (req, res) => {
+    const user = req.user;
+    const { startDate, endDate, format = 'csv' } = req.query;
+
+    if (user.userType !== 'sdma') {
+        throw new AppError('Access denied. SDMA only.', 403, 'FORBIDDEN');
+    }
+
+    const now = new Date();
+    const requestedStart = startDate ? new Date(startDate) : null;
+    const requestedEnd = endDate ? new Date(endDate) : now;
+    const start = clampStartDate(requestedStart, EXPORT_RETENTION_DAYS);
+    const end = requestedEnd && !Number.isNaN(requestedEnd.getTime()) ? requestedEnd : now;
+
+    const query = `
+        SELECT 
+            n.id AS ngo_id,
+            n.organization_name,
+            DATE_TRUNC('day', c.resolved_at) AS day,
+            COUNT(*) AS resolved_count,
+            AVG(EXTRACT(EPOCH FROM (c.resolved_at - c.created_at)) / 3600) AS avg_resolution_hours
+        FROM complaints c
+        INNER JOIN users u ON c.assigned_to = u.id
+        INNER JOIN ngos n ON n.user_id = u.id
+        WHERE c.status = 'resolved'
+          AND c.resolved_at IS NOT NULL
+          AND c.resolved_at BETWEEN $1 AND $2
+        GROUP BY n.id, n.organization_name, day
+        ORDER BY day ASC, resolved_count DESC
+    `;
+
+    const result = await db.query(query, [start, end]);
+
+    const rows = result.rows.map(row => ({
+        ngoId: row.ngo_id,
+        organizationName: row.organization_name,
+        day: row.day,
+        resolvedCount: parseInt(row.resolved_count || 0),
+        avgResolutionHours: row.avg_resolution_hours != null ? parseFloat(row.avg_resolution_hours) : null
+    }));
+
+    const filename = `ngo_performance_${new Date().toISOString().slice(0, 10)}.${format === 'pdf' ? 'pdf' : 'csv'}`;
+
+    if (format === 'pdf') {
+        setPdfHeaders(res, filename);
+        const doc = new PDFDocument({ margin: 40, size: 'A4' });
+        doc.pipe(res);
+
+        doc.fontSize(16).text('NGO Performance Export', { align: 'left' });
+        doc.moveDown(0.5);
+        doc.fontSize(10).text(`Generated: ${new Date().toLocaleString()}`);
+        doc.text(`Window: ${start.toISOString()} – ${end.toISOString()}`);
+        doc.moveDown();
+
+        rows.forEach((row) => {
+            doc.fontSize(10).text(
+                `${row.organizationName} | ${new Date(row.day).toLocaleDateString()}`
+            );
+            doc.text(
+                `Resolved: ${row.resolvedCount} | Avg resolution: ${
+                    row.avgResolutionHours != null ? `${row.avgResolutionHours.toFixed(1)} h` : 'N/A'
+                }`
+            );
+            doc.moveDown(0.7);
+        });
+
+        doc.end();
+    } else {
+        const headers = [
+            'ngoId',
+            'organizationName',
+            'day',
+            'resolvedCount',
+            'avgResolutionHours'
+        ];
+        const csv = buildCsv(headers, rows);
+        setCsvHeaders(res, filename);
+        res.send(csv);
+    }
+});
+
 module.exports = {
     getSystemOverview,
     getAllComplaints,
     getDonationAnalytics,
     getAuditTimeline,
-    getAllDonations
+    getAllDonations,
+    exportComplaints,
+    exportDonations,
+    exportNGOPerformance
 };

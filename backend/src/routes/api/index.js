@@ -15,6 +15,12 @@ const adminRoutes = require('./admin');
 const homepageRoutes = require('./homepage');
 const ddmaRoutes = require('./ddma');
 const sdmaRoutes = require('./sdma');
+const mapRoutes = require('./map');
+const notificationsRoutes = require('./notifications');
+const messagesRoutes = require('./messages');
+const blockchainRoutes = require('./blockchain');
+const statsRoutes = require('./stats');
+const systemRoutes = require('./system');
 
 // Mount routes
 router.use('/auth', authRoutes);
@@ -25,6 +31,12 @@ router.use('/admin', adminRoutes);
 router.use('/homepage', homepageRoutes);
 router.use('/ddma', ddmaRoutes);
 router.use('/sdma', sdmaRoutes);
+router.use('/map', mapRoutes);
+router.use('/notifications', notificationsRoutes);
+router.use('/messages', messagesRoutes);
+router.use('/blockchain', blockchainRoutes);
+router.use('/stats', statsRoutes);
+router.use('/system', systemRoutes);
 
 // Health check
 router.get('/health', (req, res) => {

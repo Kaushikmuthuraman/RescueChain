@@ -3,10 +3,15 @@
  * Main portal for NGOs with login, complaint management, and status updates
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import OrganizationLogin from '../../components/auth/OrganizationLogin';
 import ComplaintList from '../../components/ngo/ComplaintList';
 import ComplaintDetail from '../../components/ngo/ComplaintDetail';
+import KPIDashboard from '../../components/common/KPIDashboard';
+import RescueMap from '../../components/common/RescueMap';
+import NotificationBell from '../../components/common/NotificationBell';
+import MessagingPanel from '../../components/common/MessagingPanel';
+import { NGONoAssignments } from '../../components/common/EmptyState';
 import { getCurrentUser } from '../../services/api/ngoApi';
 import './NGOPortal.css';
 
@@ -14,8 +19,9 @@ const NGOPortal = () => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [currentView, setCurrentView] = useState('list'); // 'list' or 'detail'
+    const [currentView, setCurrentView] = useState('list'); // 'list', 'map', 'messages', or 'detail'
     const [selectedComplaintId, setSelectedComplaintId] = useState(null);
+    const [messageRecipient, setMessageRecipient] = useState(null);
 
     useEffect(() => {
         // Check if user is already logged in
@@ -122,6 +128,16 @@ const NGOPortal = () => {
                             <p className="portal-subtitle">Rescue Operations Management</p>
                         </div>
                         <div className="header-actions">
+                            <NotificationBell
+                                onComplaintClick={(id) => {
+                                    setSelectedComplaintId(id);
+                                    setCurrentView('detail');
+                                }}
+                                onMessageClick={(p) => {
+                                    setMessageRecipient(p?.senderId ? { userId: p.senderId, userName: p.senderName } : null);
+                                    setCurrentView('messages');
+                                }}
+                            />
                             <div className="user-info">
                                 <span className="user-name">🏢 {user?.name || 'NGO'}</span>
                                 <span className="user-type">({user?.userType?.toUpperCase() || 'NGO'})</span>
@@ -133,12 +149,72 @@ const NGOPortal = () => {
                     </div>
                 </header>
 
+                {/* KPI Dashboard - show on list and map views */}
+                {(currentView === 'list' || currentView === 'map') && (
+                    <section className="ngo-kpi-section">
+                        <KPIDashboard
+                            token={localStorage.getItem('token')}
+                            variant="compact"
+                            showSeverity={true}
+                            refreshInterval={30000}
+                        />
+                    </section>
+                )}
+
+                {/* Navigation tabs */}
+                <nav className="ngo-portal-nav">
+                    <button
+                        onClick={() => { setCurrentView('list'); setSelectedComplaintId(null); }}
+                        className={`ngo-nav-tab ${currentView === 'list' ? 'active' : ''}`}
+                    >
+                        Complaints
+                    </button>
+                    <button
+                        onClick={() => { setCurrentView('map'); setSelectedComplaintId(null); }}
+                        className={`ngo-nav-tab ${currentView === 'map' ? 'active' : ''}`}
+                    >
+                        Map
+                    </button>
+                    <button
+                        onClick={() => { setCurrentView('messages'); setSelectedComplaintId(null); }}
+                        className={`ngo-nav-tab ${currentView === 'messages' ? 'active' : ''}`}
+                    >
+                        Messages
+                    </button>
+                </nav>
+
                 {/* Main Content */}
                 <main className="ngo-portal-main">
                     {currentView === 'list' && (
                         <ComplaintList
                             onComplaintSelect={handleComplaintSelect}
                         />
+                    )}
+
+                    {currentView === 'messages' && (
+                        <section className="ngo-map-section">
+                            <MessagingPanel
+                                userType="ngo"
+                                initialOtherUserId={messageRecipient?.userId}
+                                initialOtherUserName={messageRecipient?.userName}
+                            />
+                        </section>
+                    )}
+
+                    {currentView === 'map' && (
+                        <section className="ngo-map-section">
+                            <RescueMap
+                                userType="ngo"
+                                height="450px"
+                                selectedComplaintId={selectedComplaintId}
+                                onComplaintSelect={(id) => setSelectedComplaintId(id)}
+                                onViewDetails={(id) => {
+                                    setSelectedComplaintId(id);
+                                    setCurrentView('detail');
+                                }}
+                                showLayerControl={true}
+                            />
+                        </section>
                     )}
 
                     {currentView === 'detail' && selectedComplaintId && (

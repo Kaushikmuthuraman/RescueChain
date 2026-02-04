@@ -28,10 +28,14 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' })); // Parse URL-enc
 app.use(morgan('combined')); // HTTP request logger
 
 // Apply general rate limiting to all API routes (protects from abuse)
-app.use('/api', defaultRateLimiter);
+app.use(['/api', '/api/v1', '/api/v2'], defaultRateLimiter);
 
 // API routes
+// Legacy base path
 app.use('/api', apiRoutes);
+// Versioned aliases
+app.use('/api/v1', apiRoutes);
+app.use('/api/v2', apiRoutes);
 
 // Root route
 app.get('/', (req, res) => {

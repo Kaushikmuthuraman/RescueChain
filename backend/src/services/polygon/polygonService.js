@@ -115,26 +115,34 @@ function sanitizeData(data) {
  * @param {string} eventType - Type of event (e.g., 'complaint_created', 'status_changed')
  * @returns {Promise<Object>} Transaction receipt with hash and block info
  */
-async function storeHashOnChain(hash, eventType) {
-    try {
-        // If no private key is configured, skip blockchain and return mock hash
-        if (!POLYGON_PRIVATE_KEY) {
-            console.warn('POLYGON_PRIVATE_KEY not configured. Skipping blockchain storage.');
-            return {
-                txHash: '0x' + crypto.randomBytes(32).toString('hex'),
-                blockNumber: null,
-                timestamp: new Date().toISOString(),
-                status: 'skipped'
-            };
-        }
-        
+async function storeHashOnChain(hash, eventType, options = {}) {
+    const maxAttempts = typeof options.maxAttempts === 'number' && options.maxAttempts > 0
+        ? options.maxAttempts
+        : 3;
+    const baseDelayMs = typeof options.baseDelayMs === 'number' && options.baseDelayMs > 0
+        ? options.baseDelayMs
+        : 500;
+
+    // If no private key is configured, skip blockchain and return mock hash
+    if (!POLYGON_PRIVATE_KEY) {
+        console.warn('POLYGON_PRIVATE_KEY not configured. Skipping blockchain storage.');
+        return {
+            txHash: '0x' + crypto.randomBytes(32).toString('hex'),
+            blockNumber: null,
+            timestamp: new Date().toISOString(),
+            status: 'skipped',
+            attempts: 0
+        };
+    }
+
+    const attemptStore = async () => {
         const contract = getContract();
-        
+
         if (contract) {
             // Use smart contract if available
             const tx = await contract.logHash(hash, eventType);
             const receipt = await tx.wait();
-            
+
             return {
                 txHash: receipt.hash,
                 blockNumber: receipt.blockNumber,
@@ -145,22 +153,22 @@ async function storeHashOnChain(hash, eventType) {
             // Use simple transaction approach
             // Send a minimal transaction with hash in data field
             const wallet = getWallet();
-            
+
             // Create transaction data: hash + eventType (encoded)
             const abiCoder = ethers.AbiCoder.defaultAbiCoder();
             const data = abiCoder.encode(
                 ['bytes32', 'string'],
                 [hash, eventType]
             );
-            
+
             const tx = await wallet.sendTransaction({
                 to: wallet.address, // Send to self (cheapest option)
                 data: data,
                 gasLimit: 100000
             });
-            
+
             const receipt = await tx.wait();
-            
+
             return {
                 txHash: receipt.hash,
                 blockNumber: receipt.blockNumber,
@@ -168,18 +176,37 @@ async function storeHashOnChain(hash, eventType) {
                 status: 'confirmed'
             };
         }
-    } catch (error) {
-        console.error('Error storing hash on Polygon:', error);
-        
-        // Return error info but don't throw - audit logging should be non-blocking
-        return {
-            txHash: null,
-            blockNumber: null,
-            timestamp: new Date().toISOString(),
-            status: 'failed',
-            error: error.message
-        };
+    };
+
+    let lastError = null;
+
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+        try {
+            const result = await attemptStore();
+            return {
+                ...result,
+                attempts: attempt
+            };
+        } catch (error) {
+            lastError = error;
+            console.error(`Error storing hash on Polygon (attempt ${attempt}/${maxAttempts}):`, error.message);
+
+            if (attempt < maxAttempts) {
+                const delay = baseDelayMs * Math.pow(2, attempt - 1);
+                await new Promise(resolve => setTimeout(resolve, delay));
+            }
+        }
     }
+
+    // After exhausting retries, return failed status with visibility into attempts
+    return {
+        txHash: null,
+        blockNumber: null,
+        timestamp: new Date().toISOString(),
+        status: 'failed',
+        error: lastError ? lastError.message : 'Unknown error',
+        attempts: maxAttempts
+    };
 }
 
 /**
@@ -192,8 +219,11 @@ async function logAuditEvent(data, eventType) {
     // Create hash from sanitized data
     const hash = createHash(data);
     
-    // Store hash on blockchain
-    const blockchainResult = await storeHashOnChain(hash, eventType);
+    // Store hash on blockchain with retry metadata
+    const blockchainResult = await storeHashOnChain(hash, eventType, {
+        maxAttempts: 3,
+        baseDelayMs: 500
+    });
     
     return {
         hash,

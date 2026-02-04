@@ -81,6 +81,41 @@
     margin: 0;
 }
 
+.sdma-portal-nav {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.sdma-nav-tab {
+    padding: 10px 20px;
+    background: white;
+    border: 2px solid #dee2e6;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #495057;
+}
+
+.sdma-nav-tab:hover {
+    border-color: #0d6efd;
+    color: #0d6efd;
+}
+
+.sdma-nav-tab.active {
+    background: #0d6efd;
+    color: white;
+    border-color: #0d6efd;
+}
+
+.sdma-map-section {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
 .sdma-header-actions {
     display: flex;
     align-items: center;
@@ -184,6 +219,360 @@
     color: #dc3545;
 }
 
+/* KPI Section */
+.sdma-kpi-section {
+    margin-bottom: 1.5rem;
+}
+
+/* Analytics grid */
+.sdma-analytics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+    margin-bottom: 1.5rem;
+}
+
+/* System status section */
+.sdma-system-section {
+    margin-bottom: 1.5rem;
+}
+
+.sdma-system-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+}
+
+.sdma-system-card {
+    background: #fff;
+    border-radius: 10px;
+    border: 1px solid #e9ecef;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    padding: 16px 18px;
+}
+
+.sdma-system-title {
+    margin: 0 0 10px 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #212529;
+}
+
+.sdma-system-health {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    font-size: 0.9rem;
+}
+
+.sdma-system-health-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.sdma-system-health-pill--ok {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.sdma-system-health-pill--warn {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.sdma-system-checks {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sdma-system-checks li {
+    display: flex;
+    justify-content: space-between;
+    padding: 4px 0;
+}
+
+.sdma-system-checks span.ok {
+    color: #198754;
+}
+
+.sdma-system-checks span.warn {
+    color: #dc3545;
+}
+
+.sdma-system-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    color: #6c757d;
+}
+
+.sdma-system-issues {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 260px;
+    overflow: auto;
+}
+
+.sdma-system-issue-row {
+    border-radius: 6px;
+    border: 1px solid #f1f3f5;
+    padding: 6px 8px;
+    background: #f8f9fa;
+    font-size: 0.8rem;
+}
+
+.sdma-system-issue-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+}
+
+.sdma-system-issue-entity {
+    font-weight: 600;
+    color: #212529;
+}
+
+.sdma-system-issue-badge {
+    border-radius: 999px;
+    padding: 2px 8px;
+    font-size: 0.75rem;
+}
+
+.sdma-system-issue-badge--error {
+    background: #dc3545;
+    color: #fff;
+}
+
+.sdma-system-issue-badge--muted {
+    background: #e9ecef;
+    color: #495057;
+}
+
+.sdma-system-issue-meta {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 2px;
+    color: #495057;
+}
+
+.sdma-system-issue-error {
+    color: #b02a37;
+    font-style: italic;
+    margin-bottom: 2px;
+}
+
+.sdma-system-issue-time {
+    font-size: 0.75rem;
+    color: #6c757d;
+}
+
+.sdma-analytics-card {
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e9ecef;
+    padding: 16px 18px;
+}
+
+.sdma-analytics-title {
+    margin: 0 0 10px 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #212529;
+}
+
+.sdma-analytics-empty {
+    margin: 4px 0 0 0;
+    font-size: 0.875rem;
+    color: #6c757d;
+}
+
+/* Heatmap table */
+.sdma-heatmap-table-wrap {
+    max-height: 260px;
+    overflow: auto;
+}
+
+.sdma-heatmap-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+}
+
+.sdma-heatmap-table th,
+.sdma-heatmap-table td {
+    padding: 6px 8px;
+    border-bottom: 1px solid #f1f3f5;
+    text-align: left;
+}
+
+.sdma-heatmap-table th {
+    background: #f8f9fa;
+    font-weight: 600;
+    color: #495057;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+
+.sdma-heatmap-row--low {
+    background: #ffffff;
+}
+
+.sdma-heatmap-row--medium {
+    background: #fff8e1;
+}
+
+.sdma-heatmap-row--high {
+    background: #ffe3e3;
+}
+
+/* NGO trends */
+.sdma-ngo-trends {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 260px;
+    overflow: auto;
+}
+
+.sdma-ngo-trend-row {
+    border-radius: 6px;
+    border: 1px solid #f1f3f5;
+    padding: 6px 8px;
+    background: #f8f9fa;
+}
+
+.sdma-ngo-trend-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.8rem;
+    margin-bottom: 4px;
+}
+
+.sdma-ngo-trend-name {
+    font-weight: 600;
+    color: #212529;
+}
+
+.sdma-ngo-trend-period {
+    color: #6c757d;
+}
+
+.sdma-ngo-trend-metrics {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.sdma-ngo-trend-bar-wrap {
+    flex: 1;
+    background: #e9ecef;
+    border-radius: 999px;
+    overflow: hidden;
+    height: 6px;
+}
+
+.sdma-ngo-trend-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #0d6efd, #20c997);
+}
+
+.sdma-ngo-trend-value {
+    font-size: 0.8rem;
+    color: #495057;
+    white-space: nowrap;
+}
+
+/* Response-time distribution */
+.sdma-response-distribution {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.sdma-response-row {
+    display: grid;
+    grid-template-columns: 70px 1fr 32px;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.8rem;
+}
+
+.sdma-response-label {
+    color: #495057;
+}
+
+.sdma-response-bar-wrap {
+    background: #e9ecef;
+    border-radius: 999px;
+    overflow: hidden;
+    height: 6px;
+}
+
+.sdma-response-bar {
+    height: 100%;
+    background: #0d6efd;
+}
+
+.sdma-response-count {
+    text-align: right;
+    color: #495057;
+}
+
+/* High-risk zones */
+.sdma-high-risk-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 260px;
+    overflow: auto;
+}
+
+.sdma-high-risk-item {
+    border-radius: 6px;
+    border: 1px solid #f8d7da;
+    background: #fff5f5;
+    padding: 6px 8px;
+}
+
+.sdma-high-risk-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+    font-size: 0.8rem;
+}
+
+.sdma-high-risk-region {
+    font-weight: 600;
+    color: #842029;
+}
+
+.sdma-high-risk-badge {
+    background: #dc3545;
+    color: #fff;
+    border-radius: 999px;
+    padding: 2px 8px;
+    font-size: 0.75rem;
+}
+
+.sdma-high-risk-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.78rem;
+    color: #6c757d;
+}
+
 /* Table */
 .sdma-table-section {
     background: #fff;
@@ -193,12 +582,23 @@
     overflow: hidden;
 }
 
+.sdma-table-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    border-bottom: 1px solid #e9ecef;
+}
+
 .sdma-table-title {
     font-size: 1.1rem;
     font-weight: 600;
     margin: 0;
-    padding: 16px 20px;
-    border-bottom: 1px solid #e9ecef;
+}
+
+.sdma-table-count {
+    font-size: 0.875rem;
+    color: #6c757d;
 }
 
 .sdma-table-wrap {
@@ -235,6 +635,60 @@
     padding: 32px !important;
 }
 
+.sdma-cell-id {
+    font-family: monospace;
+    font-size: 0.85rem;
+    color: #6c757d;
+}
+
+.sdma-row-critical {
+    background: #fff5f5;
+}
+
+.sdma-row-high {
+    background: #fffbeb;
+}
+
+/* Status badges */
+.sdma-status-badge {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    border-radius: 4px;
+    text-transform: capitalize;
+}
+
+.sdma-status-submitted {
+    background: #e5e7eb;
+    color: #374151;
+}
+
+.sdma-status-accepted {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.sdma-status-arriving {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.sdma-status-in_progress {
+    background: #fce7f3;
+    color: #9d174d;
+}
+
+.sdma-status-resolved {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.sdma-status-fake_information {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
 @media (max-width: 768px) {
     .sdma-portal-container {
         padding: 12px;
@@ -243,6 +697,12 @@
         font-size: 1.4rem;
     }
     .sdma-cards {
+        grid-template-columns: 1fr;
+    }
+    .sdma-analytics-grid {
+        grid-template-columns: 1fr;
+    }
+    .sdma-system-grid {
         grid-template-columns: 1fr;
     }
     .sdma-table th,

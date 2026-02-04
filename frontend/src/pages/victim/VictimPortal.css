@@ -74,7 +74,37 @@
 .victim-portal-nav {
     margin-bottom: 25px;
     display: flex;
-    justify-content: flex-end;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.victim-nav-btn {
+    padding: 10px 20px;
+    background: white;
+    border: 2px solid #dee2e6;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #495057;
+}
+
+.victim-nav-btn:hover {
+    border-color: #667eea;
+    color: #667eea;
+}
+
+.victim-nav-btn.active {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-color: transparent;
+}
+
+.victim-map-section {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 .btn-create {
@@ -95,12 +125,29 @@
     box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4);
 }
 
+/* KPI Section */
+.victim-kpi-section {
+    margin-bottom: 1.5rem;
+}
+
+.victim-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+}
+
 /* Main Content */
 .victim-portal-main {
     min-height: 400px;
 }
 
 /* Responsive Design */
+@media (max-width: 1024px) {
+    .victim-kpi-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
 @media (max-width: 768px) {
     .victim-portal-container {
         padding: 10px;
@@ -130,5 +177,9 @@
 
     .btn-create {
         width: 100%;
+    }
+
+    .victim-kpi-grid {
+        grid-template-columns: 1fr;
     }
 }
